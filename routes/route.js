@@ -69,7 +69,11 @@ router.get('/chooselevel', function (req, res, next) {
 });
 
 router.get('/play', function (req, res, next) {
-  res.render('play/play', { title: 'Chơi!', user: req.user });
+  if (req.user) {
+    res.render('play/play', { title: 'Chơi!', user: req.user });
+  } else {
+    res.redirect('/login');
+  }
 });
 
 router.get('/rank', function (req, res, next) {

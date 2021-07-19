@@ -45,7 +45,7 @@ app.all("*", async (req, res, next) => {
   next();
 });
 
-var indexRouter = require('./routes/index');
+var indexRouter = require('./routes/route');
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
