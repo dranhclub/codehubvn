@@ -68,14 +68,19 @@
                         <a href="#" class="">Đổi avatar</a>
                     </div>
                 </div>
-
+                <div class="row">
+                    <div class="col-6">
+                        <a href="/logout" onclick="logout()" class="btn btn-danger btn-md">Đăng xuất</a>
+                    </div>
+                </div>
             </div>
-            <!-- <div class="col-xs-12 col-md-6">
-                <img src="/images/df-avt.png" alt="">
-                
-
-            </div> -->
         </div>
     </div>
 
 <%- include('../part/foot') %>
+
+<script>
+    function logout() {
+        firebase.auth().signOut();
+    }
+</script>

@@ -18,6 +18,10 @@ router.get('/login', function(req, res, next) {
   res.render('account/login', { title: 'Đăng nhập' })
 });
 
+router.get('/logout', function(req, res, next) {
+  res.redirect('/');
+});
+
 router.get('/checkemail', function(req, res, next) {
   res.render('account/checkemail', {title: 'Check email'})
 });
@@ -45,4 +49,5 @@ router.get('/play', function(req, res, next) {
 router.get('/rank', function(req, res, next) {
   res.render('other/rank', {title: 'Bảng xếp hạng'});
 });
+
 module.exports = router;
