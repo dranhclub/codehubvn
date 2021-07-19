@@ -51,11 +51,16 @@
           <ul class="nav navbar-nav navbar-right d-block">
             <li><a href="/play" title="">Chơi</a></li>
             <li><a href="/rank" title="">Bảng xếp hạng</a></li>
-            <li id="user-display-name">
+            <li>
               <p>
-                <a href="/login" class="btn btn-default navbar-btn" title="">Đăng nhập</a>
+                <% if (typeof user !== 'undefined' && user != null) { %>
+                  <a href="/myaccount" class="btn btn-default navbar-btn" title=""><%= user.name %></a>
+                <% } else {%> 
+                  <a href="/login" class="btn btn-default navbar-btn" title="">Đăng nhập</a>
+                <% } %>
               </p>
             </li>
+            <li id="user-display-name"></li>
           </ul>
         </div>
       </div>

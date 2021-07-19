@@ -1,5 +1,4 @@
 <%- include('../part/head') %>
-
     <!-- Add your site or app content here -->
     <div class="container">
         <div class="row">
@@ -13,7 +12,7 @@
                             </div>
                             <div class="col-4">
                                 <h3 class="template-title-example">
-                                    Nguyễn Huy Hoàng
+                                    <%= user.name %>
                                     <a href="#"><i class="fas fa-edit"></i></a>
                                 </h3>
                             </div>
@@ -24,7 +23,7 @@
                                 <h3 class="template-title-example">Email:</h3>
                             </div>
                             <div class="col-3">
-                                <h3 class="template-title-example">myemail@gmail.com</h3>
+                                <h3 class="template-title-example"><%= user.email %></h3>
                             </div>
                         </div>
 
@@ -62,7 +61,8 @@
                     <div class="container">
                         <div class="row mt-3">
                             <div class="col-6">
-                                <img src="/images/df-avt.png" alt="">
+                                <!-- <img src="/images/df-avt.png" alt=""> -->
+                                <img src="<%= user.picture %>" alt="">
                             </div>
                         </div>
                         <a href="#" class="">Đổi avatar</a>
@@ -81,6 +81,6 @@
 
 <script>
     function logout() {
-        firebase.auth().signOut();
+        // firebase.auth().signOut();
     }
 </script>

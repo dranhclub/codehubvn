@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var admin = require('firebase-admin');
+var csrf = require('csurf');
 
 var serviceAccount = require("./codehubvn-firebase-adminsdk-gy7iq-c6cb57b8a7.json");
 
@@ -33,43 +34,15 @@ app.all("*", (req, res, next) => {
   next();
 });
 
-app.get("/profile", function (req, res) {
+app.all("*", async (req, res, next) => {
   const sessionCookie = req.cookies.session || "";
-
-  admin
-    .auth()
-    .verifySessionCookie(sessionCookie, true /** checkRevoked */)
-    .then(() => {
-      res.render("profile.html");
-    })
-    .catch((error) => {
-      res.redirect("/login");
-    });
-});
-
-app.post("/sessionLogin", (req, res) => {
-  const idToken = req.body.idToken.toString();
-
-  const expiresIn = 60 * 60 * 24 * 5 * 1000;
-
-  admin
-    .auth()
-    .createSessionCookie(idToken, { expiresIn })
-    .then(
-      (sessionCookie) => {
-        const options = { maxAge: expiresIn, httpOnly: true };
-        res.cookie("session", sessionCookie, options);
-        res.end(JSON.stringify({ status: "success" }));
-      },
-      (error) => {
-        res.status(401).send("UNAUTHORIZED REQUEST!");
-      }
-    );
-});
-
-app.get("/sessionLogout", (req, res) => {
-  res.clearCookie("session");
-  res.redirect("/login");
+  try {
+    req.user = await admin.auth().verifySessionCookie(sessionCookie, true /** checkRevoked */)
+  } catch(error) {
+    // console.log(error);
+    // req.user = null
+  }
+  next();
 });
 
 var indexRouter = require('./routes/index');

@@ -1,4 +1,5 @@
 <%- include('../part/head') %>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
   <!-- <div id="fb-root"></div>
     <script async defer crossorigin="anonymous"
         src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v11.0&appId=1428505044141835&autoLogAppEvents=1"
@@ -68,26 +69,40 @@
   <%- include('../part/foot') %>
 
     <script>
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+
       // Initialize the FirebaseUI Widget using Firebase.
       var ui = new firebaseui.auth.AuthUI(firebase.auth());
 
       var uiConfig = {
         callbacks: {
           signInSuccessWithAuthResult: function (authResult, redirectUrl) {
-            // User successfully signed in.
-            // Return type determines whether we continue the redirect automatically
-            // or whether we leave that to developer to handle.
+            console.log(authResult)
+            user = authResult.user
+            user.getIdToken().then((idToken)=>{
+              return fetch("/sessionLogin", {
+                method: "POST",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                  "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+                },
+                body: JSON.stringify({idToken}),
+              });
+            }).then(()=>{
+              return firebase.auth().signOut();
+            }).then(()=>{
+              window.location = '/';
+            });
             return true;
           },
           uiShown: function () {
-            // The widget is rendered.
-            // Hide the loader.
             document.getElementById('loader').style.display = 'none';
           }
         },
         // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
         signInFlow: 'popup',
-        signInSuccessUrl: '/',
+        // signInSuccessUrl: '/',
         signInOptions: [
           // Leave the lines as is for the providers you want to offer your users.
           firebase.auth.EmailAuthProvider.PROVIDER_ID,
