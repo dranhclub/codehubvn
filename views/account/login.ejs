@@ -8,49 +8,107 @@
     <%- include('../part/nav') %>
       <div id="background"></div>
       <div class="container">
-        <div id="firebaseui-auth-container"></div>
-        <div id="loader">Loading...</div>
+        <!-- <div id="firebaseui-auth-container"></div>
+        <div id="loader">Loading...</div> -->
+        <div class="col col-md-6 col-xs-12">
+          <h2>Đăng nhập</h2>
+
+          <div class="form-group">
+              <label for="login_email">Email</label>
+              <input type="email" class="form-control" id="login_email" placeholder="Email">
+              <label for="login_password">Mật khẩu</label>
+              <input type="password" class="form-control" id="login_password" placeholder="******">
+          </div>
+
+          <div class="form-group d-flex flex-row justify-content-between">
+              <label class="checkbox-inline">
+                  <input type="checkbox" id="remember" value="option1"> Lưu tài khoản
+              </label>
+              <a href="#">Quên mật khẩu</a>
+          </div>
+
+          <div class="form-group">
+              <a href="#" onclick="login()" class="fantasy-btn">Đăng nhập</a>
+              <a href="/register" class="fantasy-btn">Đăng ký</a>
+          </div> 
+
+          <p id="message"></p>
       </div>
   </body>
 
   <%- include('../part/foot') %>
 
-  <!-- Firebase -->
-
-  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-  <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
-
-  <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
-  <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-analytics.js"></script>
-
-  <!-- Add Firebase products that you want to use -->
-  <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-firestore.js"></script>
-
   <script>
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    var firebaseConfig = {
-      apiKey: "AIzaSyCDfxUnzndLfCGAZfSfBQ4kFGYxetEsz2c",
-      authDomain: "codehubvn.firebaseapp.com",
-      projectId: "codehubvn",
-      storageBucket: "codehubvn.appspot.com",
-      messagingSenderId: "383165045388",
-      appId: "1:383165045388:web:9cb01c6c15830a5402f9a9",
-      measurementId: "G-JMWQXQ0LNB"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
+    function validateEmail(email) {
+      const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
+    }
 
+    function login() {
+      let email = document.getElementById("login_email").value;
+      let password = document.getElementById("login_password").value;
+
+      if (email == "" || password == "" || !validateEmail(email)) {
+        alert("Vui lòng điền thông tin hợp lệ");
+        return;
+      }
+
+      fetch("/login", {
+          method: 'POST', // *GET, POST, PUT, DELETE, etc.
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+      })
+      .then(resp => resp.json())
+      .then(data => {
+          if (data.code == "OK") {
+            document.getElementById("message").innerText = data.message;
+          } else if (data.code == "WRONG_PASSWORD") {
+            document.getElementById("message").innerText = data.message;
+          } else if (data.code == "EMAIL_NOT_EXIST") {
+            document.getElementById("message").innerText = data.message;
+          }
+      });
+    }
+
+    const inputElms = document.querySelectorAll("input")
+    inputElms.forEach((elm)=>{
+      elm.addEventListener('input', (event) => {
+        document.getElementById("message").innerText = "";
+      });
+    });
+
+    // async function postData(url = '', data = {}) {
+    //     // Default options are marked with *
+    //     const response = await fetch(url, {
+    //       method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    //       mode: 'cors', // no-cors, *cors, same-origin
+    //       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    //       credentials: 'same-origin', // include, *same-origin, omit
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+
+    //         // 'Content-Type': 'application/x-www-form-urlencoded',
+    //       },
+    //       redirect: 'follow', // manual, *follow, error
+    //       referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    //       body: JSON.stringify(data) // body data type must match "Content-Type" header
+    //     });
+    //     return response.json(); // parses JSON response into native JavaScript objects
+    // }
+
+  // postData('/login')
+  //   .then(data => {
+  //     console.log(data); 
+  //   });
   </script>
 
-  <script src="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.js"></script>
-  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.css" />
+  <!-- <script src="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.css" /> -->
 
-  <script>
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
-
+  <!-- <script>
     // Initialize the FirebaseUI Widget using Firebase.
     var ui = new firebaseui.auth.AuthUI(firebase.auth());
 
@@ -69,9 +127,9 @@
               body: JSON.stringify({ idToken }),
             });
           }).then(() => {
-            return firebase.auth().signOut();
+            // return firebase.auth().signOut();
           }).then(() => {
-            window.location = '/';
+            // window.location = '/myaccount';
           });
           return true;
         },
@@ -93,7 +151,7 @@
           customParameters: {
             // Forces account selection even when one account
             // is available.
-            prompt: 'select_account'
+            // prompt: 'select_account'
           }
         },
         firebase.auth.FacebookAuthProvider.PROVIDER_ID,
@@ -106,6 +164,33 @@
 
     ui.start('#firebaseui-auth-container', uiConfig);
 
-  </script>
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          if (!user.emailVerified) {
+            var actionCodeSettings = {
+              url: 'http://localhost:3000/emailverified',
+              handleCodeInApp: true,
+            };
+            firebase.auth().sendSignInLinkToEmail(user.email, actionCodeSettings)
+              .then(() => {
+                // The link was successfully sent. Inform the user.
+                // Save the email locally so you don't need to ask the user for it again
+                // if they open the link on the same device.
+                window.localStorage.setItem('emailForSignIn', user.email);
+                // ...
+                window.location = '/checkemail';
+              })
+              .catch((error) => {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                console.log(error);
+              });
+          }
+        } else {
+          console.log("user is sign out")
+        }
+      });
+
+  </script> -->
 
 </html>

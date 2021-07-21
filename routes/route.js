@@ -1,15 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var admin = require('firebase-admin');
+var jwt = require('jsonwebtoken');
 
 const db = admin.firestore();
-
-router.get('/test_signup/', async (req, res)=>{
-  const docRef = db.collection("users").doc("dranh.club@gmail.com");
-  await docRef.set({user: req.user});
-  await docRef.update({question: 1});
-  res.send("OK");
-});
 
 router.get('/test_create_question', async (req, res) => {
   for (let i = 0; i < 5; i++) {
@@ -57,12 +51,69 @@ router.post('/sessionLogin', (req, res, next) => {
     );
 });
 
+router.get('/register', (req, res) => {
+  res.render('account/register', {title: "Đăng ký"});
+});
+
+router.post('/register', async (req, res) => {
+  console.log("New register request");
+  let {name, email, password} = req.body;
+  console.log(name);
+
+  let docRef = db.collection("users").doc(email);
+  if ((await docRef.get()).exists) {
+    res.send(JSON.stringify({
+      code: "EMAIL_EXISTED", 
+      message: "Email đã được đăng ký cho một tài khoản khác"
+    }));
+  } else {
+    docRef.set({
+      name, email, password
+    }).then(()=>{
+      res.send(JSON.stringify({
+        code: "OK",
+        message: "Đăng ký thành công"
+      }));
+    }).catch(error=>{
+      res.send({error});
+    });
+  }
+});
+
 router.get('/login', function (req, res, next) {
   if (req.user) {
     res.redirect('/');
   } else {
     res.render('account/login', { title: 'Đăng nhập' });
   }
+});
+
+router.post('/login', (req, res)=>{
+  let email = req.body.email;
+  let password = req.body.password;
+
+  const docRef = db.collection("users").doc(email);
+  docRef.get()
+    .then((user) => {
+      if (!user.exists) {
+        res.send({
+          code: "EMAIL_NOT_EXIST",
+          message: "Đăng nhập không thành công, email không tồn tại"
+        });
+      } else {
+        if (password === user.data().password) {
+          res.send({
+            code: "OK",
+            message: "Đăng nhập thành công"
+          });
+        } else {
+          res.send({
+            code: "WRONG_PASSWORD",
+            message: "Sai mật khẩu"
+          });
+        }
+      }
+    })
 });
 
 router.get('/logout', function (req, res, next) {
@@ -83,7 +134,11 @@ router.get('/emailverified', function (req, res, next) {
 });
 
 router.get('/myaccount', function (req, res, next) {
-  res.render('account/myaccount', { title: 'Thông tin tài khoản', user: req.user });
+  if (req.user) {
+    res.render('account/myaccount', { title: 'Thông tin tài khoản', user: req.user });
+  } else {
+    res.send(404);
+  }
 });
 
 router.get('/instruction', function (req, res, next) {

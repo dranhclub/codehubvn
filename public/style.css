@@ -57,6 +57,7 @@ footer{
   background: url('/images/buttonStock1.png') no-repeat;
   background-position: center center; 
   background-size: 100% 100%;
+  border: none;
 }
 
 .fantasy-btn:hover{

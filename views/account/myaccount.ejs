@@ -12,10 +12,10 @@
                         <div style="color: #444; font-size: 20px">Tên</div>
                         <h2><%= user.name %></h2>
                         <div style="color: #444; font-size: 20px">Email</div>
-                        <h2><%= user.email %></h2>
+                        <h2><%= user.email %> <%= user.email_verified ? "(Đã xác thực)":"Chưa xác thực" %></h2>
                         <div>
                             <a href="#" class="fantasy-btn">Sửa thông tin</a>
-                            <a href="/logout" class="fantasy-btn">Đăng xuất</a>
+                            <a href="/logout" onclick="firebase.auth().signOut()" class="fantasy-btn">Đăng xuất</a>
                         </div>
                     </div>
 
@@ -24,6 +24,7 @@
                             <img src="<%= user.picture %>" alt="">
                         </div>
                     </div>
+                    <%= JSON.stringify(user) %>
                 </div>
             </div>
     </body>
