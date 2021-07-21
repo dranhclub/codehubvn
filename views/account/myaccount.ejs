@@ -1,86 +1,33 @@
-<%- include('../part/head') %>
-    <!-- Add your site or app content here -->
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-md-6">
+<!doctype html>
+<html lang="en">
 
-                <div class="template-example">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-1">
-                                <h3 class="template-title-example">Tên:</h3>
-                            </div>
-                            <div class="col-4">
-                                <h3 class="template-title-example">
-                                    <%= user.name %>
-                                    <a href="#"><i class="fas fa-edit"></i></a>
-                                </h3>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-1">
-                                <h3 class="template-title-example">Email:</h3>
-                            </div>
-                            <div class="col-3">
-                                <h3 class="template-title-example"><%= user.email %></h3>
-                            </div>
-                        </div>
+    <%- include('../part/head') %>
 
-                        <div class="row">
-                            <div class="col-1">
-                                <h3 class="template-title-example">SĐT:</h3>
-                            </div>
-                            <div class="col-3">
-                                <h3 class="template-title-example">
-                                    0123456789
-                                    <a href="#"><i class="fas fa-edit"></i></a>
-                                </h3>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-6">
-                                <a href="#" class="btn btn-primary btn-md">Lưu thông tin</a>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-6 mt-2">
-                                <a href="#" class="">Đổi mật khẩu</a>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-            <div class="col-xs-12 col-md-6">
-
-                <div class="template-example">
-                    <div class="container">
-                        <div class="row mt-3">
-                            <div class="col-6">
-                                <!-- <img src="/images/df-avt.png" alt=""> -->
-                                <img src="<%= user.picture %>" alt="">
-                            </div>
-                        </div>
-                        <a href="#" class="">Đổi avatar</a>
-                    </div>
-                </div>
+    <body>
+        <%- include('../part/nav') %>
+            <div id="background"></div>
+            <div class="container">
                 <div class="row">
-                    <div class="col-6">
-                        <a href="/logout" onclick="logout()" class="btn btn-danger btn-md">Đăng xuất</a>
+                    <div class="col-xs-12 col-md-6">
+                        <div style="color: #444; font-size: 20px">Tên</div>
+                        <h2><%= user.name %></h2>
+                        <div style="color: #444; font-size: 20px">Email</div>
+                        <h2><%= user.email %></h2>
+                        <div>
+                            <a href="#" class="fantasy-btn">Sửa thông tin</a>
+                            <a href="/logout" class="fantasy-btn">Đăng xuất</a>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div>
+                            <img src="<%= user.picture %>" alt="">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+    </body>
 
 <%- include('../part/foot') %>
 
-<script>
-    function logout() {
-        // firebase.auth().signOut();
-    }
-</script>
+</html>

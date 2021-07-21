@@ -1,0 +1,19 @@
+<nav>
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <div>
+                <img src="https://via.placeholder.com/50x50?text=logo" alt="">
+                <a href="/" class="nav-btn">Home</a>
+            </div>  
+            <div class="align-self-center">
+                <a href="/play" class="nav-btn">Chơi</a>
+                <a href="/rank" class="nav-btn">Bảng xếp hạng</a>
+                <% if (typeof user !== 'undefined' && user != null) { %>
+                  <a href="/myaccount" class="nav-btn"><%= user.name %></a>
+                <% } else {%> 
+                  <a href="/login" class="nav-btn">Đăng nhập</a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</nav>

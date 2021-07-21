@@ -1,0 +1,120 @@
+<%- include('../part/head') %>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+  <!-- <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous"
+        src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v11.0&appId=1428505044141835&autoLogAppEvents=1"
+        nonce="o4fOPevG"></script> -->
+
+  <!-- Add your site or app content here -->
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-md-6">
+        <div id="firebaseui-auth-container"></div>
+        <div id="loader">Loading...</div>
+        <!-- <div class="template-example">
+                    <h2 class="template-title-example">Đăng nhập</h2>
+
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Email</label>
+                        <input type="email" class="form-control" id="email1" placeholder="Email">
+                        <label for="exampleInputEmail1">Mật khẩu</label>
+                        <input type="password" class="form-control" id="password" placeholder="******">
+                    </div>
+
+                    <div class="form-group d-flex flex-row justify-content-between">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="remember" value="option1"> Lưu tài khoản
+                        </label>
+                        <a href="#">Quên mật khẩu</a>
+                    </div>
+
+                    <div class="form-group">
+                        <a href="" class="btn btn-primary btn-lg">Đăng nhập</a>
+                    </div>
+                    FB Login button
+                    <div class="form-group">
+                        <div class="fb-login-button" data-width="" data-size="large" data-button-type="continue_with"
+                            data-layout="default" data-auto-logout-link="false" data-use-continue-as="false"></div>
+                    </div>
+                </div> -->
+
+      </div>
+
+      <div class="col-xs-12 col-md-6">
+
+        <div class="template-example">
+          <h2 class="template-title-example">Đăng ký</h2>
+
+          <div class="form-group">
+            <label for="exampleInputEmail1">Tên</label>
+            <input type="name" class="form-control" id="name" placeholder="Tên">
+            <label for="exampleInputEmail1">Email</label>
+            <input type="email" class="form-control" id="email" placeholder="Email">
+            <label for="exampleInputEmail1">Mật khẩu</label>
+            <input type="password" class="form-control" id="password1" placeholder="******">
+            <label for="exampleInputEmail1">Nhập lại mật khẩu</label>
+            <input type="password" class="form-control" id="password2" placeholder="******">
+          </div>
+
+          <div class="form-group">
+            <a href="" class="btn btn-primary btn-lg">Đăng ký</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <%- include('../part/foot') %>
+
+    <script>
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+
+      // Initialize the FirebaseUI Widget using Firebase.
+      var ui = new firebaseui.auth.AuthUI(firebase.auth());
+
+      var uiConfig = {
+        callbacks: {
+          signInSuccessWithAuthResult: function (authResult, redirectUrl) {
+            console.log(authResult)
+            user = authResult.user
+            user.getIdToken().then((idToken)=>{
+              return fetch("/sessionLogin", {
+                method: "POST",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                  "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+                },
+                body: JSON.stringify({idToken}),
+              });
+            }).then(()=>{
+              return firebase.auth().signOut();
+            }).then(()=>{
+              window.location = '/';
+            });
+            return true;
+          },
+          uiShown: function () {
+            document.getElementById('loader').style.display = 'none';
+          }
+        },
+        // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
+        signInFlow: 'popup',
+        // signInSuccessUrl: '/',
+        signInOptions: [
+          // Leave the lines as is for the providers you want to offer your users.
+          firebase.auth.EmailAuthProvider.PROVIDER_ID,
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+        ],
+        // Terms of service url.
+        tosUrl: '<your-tos-url>',
+        // Privacy policy url.
+        privacyPolicyUrl: '<your-privacy-policy-url>'
+      };
+
+      ui.start('#firebaseui-auth-container', uiConfig);
+
+    </script>

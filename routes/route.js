@@ -26,7 +26,7 @@ router.get('/test_create_question', async (req, res) => {
 });
 
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Codehubvn', user: req.user });
+  res.render('other/index', { title: 'Codehubvn', user: req.user });
 });
 
 router.get('/project', function (req, res, next) {
@@ -55,14 +55,6 @@ router.post('/sessionLogin', (req, res, next) => {
         res.status(401).send("UNAUTHORIZED REQUEST!");
       }
     );
-
-  admin
-  .auth()
-  .verifyIdToken(idToken)
-  .then((user)=>{
-    const docRef = db.collection("users").doc(user.email);
-    docRef.set({user}).then(()=>{console.log(user)});
-  });
 });
 
 router.get('/login', function (req, res, next) {
@@ -83,7 +75,7 @@ router.get('/logout', function (req, res, next) {
 });
 
 router.get('/checkemail', function (req, res, next) {
-  res.render('account/checkemail', { title: 'Check email', user: req.user })
+  res.render('account/checkemail', { title: 'Check email'})
 });
 
 router.get('/emailverified', function (req, res, next) {
