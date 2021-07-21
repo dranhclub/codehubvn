@@ -12,8 +12,8 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-const csrfMiddleware = csrf({ cookie: true });
 
+const csrfMiddleware = csrf({ cookie: true });
 
 
 var app = express();

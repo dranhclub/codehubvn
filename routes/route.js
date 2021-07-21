@@ -2,6 +2,28 @@ var express = require('express');
 var router = express.Router();
 var admin = require('firebase-admin');
 
+const db = admin.firestore();
+
+router.get('/test_signup/', async (req, res)=>{
+  const docRef = db.collection("users").doc("dranh.club@gmail.com");
+  await docRef.set({user: req.user});
+  await docRef.update({question: 1});
+  res.send("OK");
+});
+
+router.get('/test_create_question', async (req, res) => {
+  for (let i = 0; i < 5; i++) {
+    const docRef = db.collection("questions").doc(`question_${i}`);
+    docRef.set({
+      title: `Câu hỏi ${i}`,
+      text: 'Ullamco aute in esse irure. Id tempor cillum fugiat irure sunt sunt consequat aliqua cillum. Veniam deserunt ea occaecat adipisicing anim ipsum. Aliqua labore aute duis magna eiusmod magna amet pariatur dolore in aliqua elit non aliquip.',
+      image: `https://picsum.photos/seed/question_${i}/200/300`,
+      video: `[url]`,
+    });
+  }
+
+  res.send("OK");
+});
 
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Codehubvn', user: req.user });
@@ -33,6 +55,14 @@ router.post('/sessionLogin', (req, res, next) => {
         res.status(401).send("UNAUTHORIZED REQUEST!");
       }
     );
+
+  admin
+  .auth()
+  .verifyIdToken(idToken)
+  .then((user)=>{
+    const docRef = db.collection("users").doc(user.email);
+    docRef.set({user}).then(()=>{console.log(user)});
+  });
 });
 
 router.get('/login', function (req, res, next) {
@@ -44,8 +74,12 @@ router.get('/login', function (req, res, next) {
 });
 
 router.get('/logout', function (req, res, next) {
-  res.clearCookie("session");
-  res.redirect("/login");
+  if (req.user) {
+    res.clearCookie("session");
+    res.redirect("/login");
+  } else {
+    res.redirect('/');
+  }
 });
 
 router.get('/checkemail', function (req, res, next) {
@@ -68,9 +102,19 @@ router.get('/chooselevel', function (req, res, next) {
   res.render('play/chooselevel', { title: 'Chọn cấp độ', user: req.user });
 });
 
-router.get('/play', function (req, res, next) {
+router.get('/play', (req, res) => {
+  res.redirect('/play/1');
+});
+
+router.get('/play/:id', async function (req, res, next) {
   if (req.user) {
-    res.render('play/play', { title: 'Chơi!', user: req.user });
+    const questionDocRef = db.collection("questions").doc(`question_${req.params.id}`);
+    let question = await questionDocRef.get();
+    if (question.exists) {
+      res.render('play/play', { title: 'Chơi!', user: req.user, question: question.data() });
+    } else {
+      res.send("Question id not exist");
+    }
   } else {
     res.redirect('/login');
   }
