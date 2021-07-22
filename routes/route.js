@@ -40,15 +40,20 @@ router.get('/components', function (req, res, next) {
 
 router.post('/login', (req, res, next) => {
   const idToken = req.body.idToken.toString();
-
+  const remember = req.body.remember;
+  
   const expiresIn = 60 * 60 * 24 * 5 * 1000;
 
   admin
     .auth()
-    .createSessionCookie(idToken, { expiresIn })
+    .createSessionCookie(idToken, {expiresIn})
     .then(
       (sessionCookie) => {
-        const options = { maxAge: expiresIn, httpOnly: true };
+        if (remember) {
+          var options = { maxAge: expiresIn, httpOnly: true };
+        } else {
+          var options = { httpOnly: true };
+        }
         res.cookie("session", sessionCookie, options);
         res.send({ code: "OK", message: "Tạo phiên đăng nhập thành công" });
       },
@@ -109,6 +114,10 @@ router.get('/checkemail', function (req, res, next) {
 
 router.get('/emailverified', function (req, res, next) {
   res.render('account/emailverified', { title: 'Xác thực email thành công', user: req.user });
+});
+
+router.get('/forgot', (req, res) => {
+  res.render('account/forgotpassword', {title: 'Quên mật khẩu'});
 });
 
 /**************** */
