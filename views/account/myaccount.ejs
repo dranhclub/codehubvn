@@ -9,22 +9,48 @@
             <div class="container">
                 <div class="row">
                     <div class="col-xs-12 col-md-6">
-                        <div style="color: #444; font-size: 20px">Tên</div>
-                        <h2><%= user.displayName %></h2>
-                        <div style="color: #444; font-size: 20px">Email</div>
-                        <% if (user.emailVerified) { %>
-                            <h2><%= user.email %></h2>
-                        <% } else { %>
-                            <h2><%= user.email %></h2>
-                            <p>
-                                Email chưa xác thực.
-                                <a href="/checkemail" onclick="verifyEmail()">Xác thực email</a>
-                            </p>
-                        <% } %>
-                        <div>
-                            <a href="#" class="fantasy-btn">Sửa thông tin</a>
-                            <a href="/logout" onclick="firebase.auth().signOut()" class="fantasy-btn">Đăng xuất</a>
+                        <h3>Thông tin cơ bản</h3>
+                        <div class="form-group">
+                            <label for="name">Tên</label>
+                            <input type="text" name="name" id="name" class="form-control" value="<%= user.displayName %>">
+                            <label for="email">Email</label>
+                            <input type="email" name="email" id="email" class="form-control" value="<%= user.email %>" disabled>
+                            <% if (!user.emailVerified) { %>
+                                <p>
+                                    Email chưa xác thực.
+                                    <a href="/checkemail">Xác thực email</a>
+                                </p>
+                            <% } %>    
                         </div>
+
+                        <hr>
+                        <h3>Ảnh đại diện</h3>
+                        <div class="d-flex flex-column">
+                            <% if (user.photoURL) { %>
+                                <img src="<%=user.photoURL%>" id="avatar" width="200" height="200" alt="default avatar" class="img-thumbnail">
+                            <% } else { %>
+                                <img src="/images/df-avt.png" id="avatar" width="200" height="200" alt="default avatar" class="img-thumbnail">
+                            <% } %>
+                            <input type="file" accept="image/*" id="file-button" >
+                        </div>
+
+                        <p></p>
+                        <div>
+                            <a href="#" onclick="saveChange()" class="fantasy-btn">Lưu thay đổi</a>
+                        </div>
+
+                        <hr>
+                        <h3>Đổi mật khẩu</h3>
+                        <div class="form-group">
+                            <label for="old-password">Mật khẩu cũ</label>
+                            <input type="text" class="form-control" id="old-password">
+                            <label for="new-password">Mật khẩu mới</label>
+                            <input type="text" class="form-control" id="new-password">
+                            <a href="#" onclick="changePassword()" class="fantasy-btn">Đổi mật khẩu</a>
+                        </div>
+
+                        <hr>
+                        <a href="/logout" onclick="firebase.auth().signOut()" class="fantasy-btn">Đăng xuất</a>
                     </div>
 
                     <div class="col-xs-12 col-md-6">
@@ -40,8 +66,136 @@
 <%- include('../part/foot') %>
 
 <script>
-    function verifyEmail() {
+    function changePassword() {
+        let oldPassword = document.getElementById("old-password").value;
+        let newPassword = document.getElementById("old-password").value;
+        let email = `<%= user.email %>`;
 
+        fetch('/change-password', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "CSRF-Token": Cookies.get("XSRF-TOKEN")
+            },
+            body: JSON.stringify({oldPassword, newPassword})
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.code == "OK") {
+                alert("Đổi  mật khẩu thành công");
+                firebase.auth().signInWithEmailAndPassword(email, newPassword)
+                    .then((userCredential) => {
+                        user = userCredential.user;
+                        user.getIdToken().then(idToken => {
+                            fetch('/login', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type' : 'application/json',
+                                    "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+                                },
+                                body: JSON.stringify({idToken})
+                            }).then(resp => resp.json())
+                            .then(data => {
+                                if (data.code == "OK") {
+                                    window.location = '/myaccount';
+                                }
+                            });
+                        });
+                    })
+            } else if (data.code == "WRONG_PASSWORD") {
+                alert("Mật khẩu cũ không đúng");
+            } else {
+                alert(JSON.stringify(data));
+            }
+        });
+    }
+
+    let currentUser = null;
+
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+        }
+    });
+
+    function uploadFile(file) {
+        var metadata = {
+            contentType: 'image/jpeg',
+        };
+
+        var rootRef = firebase.storage().ref();
+        var uploadFileRef = rootRef.child(`images/${currentUser.email}`)
+
+        var uploadTask = uploadFileRef.put(file, metadata);
+
+        // Listen for state changes, errors, and completion of the upload.
+        uploadTask.on(
+            firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+            function(snapshot) {
+                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                var progress = snapshot.bytesTransferred / snapshot.totalBytes * 100;
+                console.log('Upload is ' + progress + '% done');
+                switch (snapshot.state) {
+                    case firebase.storage.TaskState.PAUSED: // or 'paused'
+                        console.log('Upload is paused');
+                        break;
+                    case firebase.storage.TaskState.RUNNING: // or 'running'
+                        console.log('Upload is running');
+                        break;
+                }
+            },
+            function(error) {
+                // Errors list: https://firebase.google.com/docs/storage/web/handle-errors
+                console.log(console.log(error));
+                switch (error.code) {
+                    case 'storage/unauthorized':
+                        // User doesn't have permission to access the object
+                        break;
+
+                    case 'storage/canceled':
+                        // User canceled the upload
+                        break;
+
+                    case 'storage/unknown':
+                        // Unknown error occurred, inspect error.serverResponse
+                        break;
+                }
+            },
+            function() {
+                // Upload completed successfully, now we can get the download URL
+
+                uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                    console.log('File available at', downloadURL);
+                    var _img = document.getElementById('avatar');
+                    var newImg = new Image;
+                    newImg.onload = function() {
+                        _img.src = this.src;
+                    }
+                    newImg.src = downloadURL;
+
+                });
+
+            }
+        );
+    }
+
+    document.getElementById("file-button").addEventListener('change', e => {
+        uploadFile(e.target.files[0]);
+    });
+
+    function saveChange() {
+        let name = document.getElementById('name').value;
+        let imgUrl = document.getElementById('avatar').src;
+
+        currentUser.updateProfile({
+            displayName: name,
+            photoURL: imgUrl
+        }).then(() => {
+            alert('Đã lưu thay đổi');
+        }).catch((error) => {
+            alert(error.message);
+            console.log(error);
+        });
     }
 </script>
 

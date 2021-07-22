@@ -35,6 +35,9 @@ router.get('/components', function (req, res, next) {
   res.render('components', { title: 'Components', user: req.user });
 });
 
+/**************** */
+/* Authentication */
+
 router.post('/login', (req, res, next) => {
   const idToken = req.body.idToken.toString();
 
@@ -108,12 +111,50 @@ router.get('/emailverified', function (req, res, next) {
   res.render('account/emailverified', { title: 'Xác thực email thành công', user: req.user });
 });
 
+/**************** */
+/* My account  */
+
 router.get('/myaccount', function (req, res, next) {
   if (req.user) {
     res.render('account/myaccount', { title: 'Thông tin tài khoản', user: req.user });
   } else {
     res.redirect('/login');
   }
+});
+
+router.post('/change-password', (req, res) => {
+  if (!req.user) {
+    res.status(400).send("Bad request");
+  }
+
+  let {oldPassword, newPassword} = req.body;
+  
+  firebase.auth().signInWithEmailAndPassword(req.user.email, oldPassword)
+    .then((userCredential) => {
+      admin.auth().updateUser(req.user.uid, {
+        password: newPassword
+      }).then((userRecord)=>{
+        console.log('Successfully updated user', userRecord);
+        res.send({
+          code: "OK",
+          message: "Đổi mật khẩu thành công"
+        });
+      }).catch((error)=>{
+        console.log(error);
+        res.send(error);
+      });
+    })
+    .catch(error => {
+      if (error.code == "auth/wrong-password") {
+        res.send({
+          code: "WRONG_PASSWORD",
+          message: "Mật khẩu cũ không đúng"
+        });
+      } else {
+        console.log(error);
+        res.send(error);
+      }
+    });
 });
 
 router.get('/instruction', function (req, res, next) {
