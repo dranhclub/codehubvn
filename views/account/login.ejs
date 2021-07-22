@@ -3,6 +3,42 @@
 
   <%- include('../part/head') %>
   
+  <style>
+    #fb-login-btn{
+      display: flex;
+      height: 50px;
+      /* width: 200px; */
+      background-color: rgb(59,89,152);
+      align-items: center;
+      margin: 10px 0px;
+      padding: 10px;
+    }
+
+    #fb-login-btn:hover{
+      cursor: pointer;
+      background-color: rgb(79,109,172);
+    }
+
+    #gg-login-btn{
+      display: flex;
+      height: 50px;
+      /* width: 200px; */
+      background-color: rgb(66,133,244);
+      align-items: center;
+      margin: 10px 0px;
+      padding: 10px;
+    }
+
+    #gg-login-btn:hover{
+      cursor: pointer;
+      background-color: rgb(86,153,255);
+    }
+
+    .login-txt{
+      margin-left: 10px
+    }
+  </style>
+
   <body>
     <%- include('../part/nav') %>
       <div id="background"></div>
@@ -30,6 +66,17 @@
           </div> 
 
           <p id="message"></p>
+
+          <div>
+            <div id="gg-login-btn" onclick="signInWithGoogle()">
+              <img src="/images/google-logo.png" alt="" width="25" height="25" style="border-radius: 2px;">
+              <div class="text-white login-txt">Đăng nhập với Google</div>
+            </div>
+            <div id="fb-login-btn" onclick="signInWithFacebook()">
+              <img src="/images/facebook-logo.png" alt="" width="25" height="25">
+              <div class="text-white login-txt">Đăng nhập với Facebook</div>
+            </div>
+          </div>
       </div>
   </body>
 
@@ -92,5 +139,67 @@
       });
     });
 
+    function signInWithGoogle() {
+      // Using a popup.
+      var provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope('profile');
+      provider.addScope('email');
+      firebase.auth().signInWithPopup(provider).then(function(result) {
+        // This gives you a Google Access Token.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
+        user.getIdToken().then(idToken => {
+          fetch('/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              "CSRF-Token": Cookies.get("XSRF-TOKEN")
+            },
+            body: JSON.stringify({idToken})
+          })
+          .then(resp => resp.json())
+          .then(data => {
+            if (data.code == "OK") {
+              showMessage("Đăng nhập với Google thành công");
+              window.location = '/myaccount';
+            } else {
+              showMessage(data.message);
+            }
+          });
+        });
+      });
+    }
+  
+    function signInWithFacebook() {
+      // Sign in using a popup.
+      var provider = new firebase.auth.FacebookAuthProvider();
+      firebase.auth().signInWithPopup(provider).then(function(result) {
+        // This gives you a Facebook Access Token.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
+
+        user.getIdToken().then(idToken => {
+          fetch('/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              "CSRF-Token": Cookies.get("XSRF-TOKEN")
+            },
+            body: JSON.stringify({idToken})
+          })
+          .then(resp => resp.json())
+          .then(data => {
+            if (data.code == "OK") {
+              showMessage("Đăng nhập với Facebook thành công");
+              window.location = '/myaccount';
+            } else {
+              showMessage(data.message);
+            }
+          });
+        });
+      });
+    }
   </script>
 </html>
