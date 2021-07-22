@@ -24,6 +24,7 @@
           
           <div class="form-group">
             <a type="submit" onclick="register()" class="fantasy-btn">Đăng ký</a>
+            <a href="/login" class="fantasy-btn">Quay lại</a>
           </div>
           <p id="message"></p>
         </div>
@@ -38,37 +39,89 @@
       return re.test(email);
     }
 
+    function showMessage(message) {
+      document.getElementById("message").innerText = message;  
+    }
+
     function register() {
       let name = document.getElementById('name').value;
       let email = document.getElementById('email').value;
       let password = document.getElementById('password').value;
 
-      if (name == "" || email == "" || password == "" || !validateEmail(email)) {
-        alert("Vui lòng điền thông tin hợp lệ");
-        return;
-      }
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((userCredential)=>{
+          user = userCredential.user;
+          user.updateProfile({
+            displayName: name,
+          }).then(()=>{
+            showMessage("Đăng ký thành công");
+            user.getIdToken()
+              .then((idToken) => {
+                fetch('/login', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+                  },
+                  body: JSON.stringify({idToken})
+                }).then(resp => resp.json())
+                  .then(data => {
+                    if (data.code == "OK") {
+                      window.location = '/myaccount';
+                    }
+                  });
+              });
+          }).catch(error => {
+            showMessage(error.message);
+          })
+        })
+        .catch(function(error) {
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          if (errorCode == 'auth/weak-password') {
+            showMessage(errorMessage);
+          } else {
+            showMessage(errorMessage);
+          }
+          console.log(error);
+        });
 
-      fetch('/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({name, email, password})
-      })
-      .then(resp => resp.json())
-      .then(data => {
-        if (data.code == "EMAIL_EXISTED") {
-          document.getElementById("message").innerText = data.message;
-        } else if (data.code == "OK") {
-          document.getElementById("message").innerText = data.message;
 
-
-
-          setTimeout(()=>{
-            window.location = '/checkemail';
-          }, 1000);
-        }
+      // Input change event
+      const inputElms = document.querySelectorAll("input")
+      inputElms.forEach((elm)=>{
+        elm.addEventListener('input', (event) => {
+          showMessage("");
+        });
       });
+
+      // if (name == "" || email == "" || password == "" || !validateEmail(email)) {
+      //   alert("Vui lòng điền thông tin hợp lệ");
+      //   return;
+      // }
+
+      // fetch('/register', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify({name, email, password})
+      // })
+      // .then(resp => resp.json())
+      // .then(data => {
+      //   if (data.code == "EMAIL_EXISTED") {
+      //     document.getElementById("message").innerText = data.message;
+      //   } else if (data.code == "OK") {
+      //     document.getElementById("message").innerText = data.message;
+      //     setTimeout(()=>{
+      //       window.location = '/checkemail';
+      //     }, 1000);
+      //   } else if (data.code == "INVALID_EMAIL") {
+      //       document.getElementById("message").innerText = data.message;  
+      //   } else {
+      //     document.getElementById("message").innerText = JSON.stringify(data);
+      //   }
+      // });
     }
   </script>
 

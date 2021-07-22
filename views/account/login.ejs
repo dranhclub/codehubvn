@@ -44,32 +44,45 @@
       return re.test(email);
     }
 
+    function showMessage(message) {
+      document.getElementById("message").innerText = message;  
+    }
+
     function login() {
       let email = document.getElementById("login_email").value;
       let password = document.getElementById("login_password").value;
 
-      if (email == "" || password == "" || !validateEmail(email)) {
-        alert("Vui lòng điền thông tin hợp lệ");
-        return;
-      }
+      // if (email == "" || password == "" || !validateEmail(email)) {
+      //   alert("Vui lòng điền thông tin hợp lệ");
+      //   return;
+      // }
 
-      fetch("/login", {
-          method: 'POST', // *GET, POST, PUT, DELETE, etc.
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
-      })
-      .then(resp => resp.json())
-      .then(data => {
-          if (data.code == "OK") {
-            document.getElementById("message").innerText = data.message;
-          } else if (data.code == "WRONG_PASSWORD") {
-            document.getElementById("message").innerText = data.message;
-          } else if (data.code == "EMAIL_NOT_EXIST") {
-            document.getElementById("message").innerText = data.message;
-          }
-      });
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          user = userCredential.user;
+          user.getIdToken().then((idToken)=>{
+            fetch('/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+              },
+              body: JSON.stringify({idToken})
+            }).then(resp => resp.json())
+              .then(data => {
+                if (data.code == "OK") {
+                  window.location = '/myaccount';
+                } else {
+                  showMessage(data.message)
+                }
+              })
+              .catch(error => {
+                showMessage(error);
+              });
+          });
+        }).catch(error => {
+          showMessage(error)
+        });
     }
 
     const inputElms = document.querySelectorAll("input")

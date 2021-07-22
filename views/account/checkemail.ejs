@@ -1,6 +1,22 @@
-<%- include('../part/head') %>
+<!doctype html>
+<html lang="en">
 
-<p>
-    Vui lòng kiểm tra email để xác thực tài khoản
-</p>
+    <%- include('../part/head') %>
 
+    <body>
+        <%- include('../part/nav') %>
+            <div id="background"></div>
+            <div class="container">
+                <p>
+                    <% if (user.verifyEmail) { %>
+                        Email đã được xác thực rồi.
+                    <% } else { %>
+                        Vui lòng kiểm tra email <a href="#"><%=user.email%></a>  để xác thực tài khoản.
+                    <% } %>
+                </p>
+            </div>
+    </body>
+
+<%- include('../part/foot') %>
+
+</html>

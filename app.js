@@ -4,8 +4,25 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var admin = require('firebase-admin');
-// var csrf = require('csurf');
+var csrf = require('csurf');
 var nodemailer = require('./config/nodemailer.config')
+var firebase = require("firebase/app");
+require("firebase/analytics");
+require("firebase/auth");
+require("firebase/firestore");
+
+var firebaseConfig = {
+  apiKey: "AIzaSyCDfxUnzndLfCGAZfSfBQ4kFGYxetEsz2c",
+  authDomain: "codehubvn.firebaseapp.com",
+  projectId: "codehubvn",
+  storageBucket: "codehubvn.appspot.com",
+  messagingSenderId: "383165045388",
+  appId: "1:383165045388:web:9cb01c6c15830a5402f9a9",
+  measurementId: "G-JMWQXQ0LNB"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
 
 // nodemailer.sendConfirmationEmail(
 //   "Nguyen Huy Hoang",
@@ -20,7 +37,7 @@ admin.initializeApp({
 });
 
 
-// const csrfMiddleware = csrf({ cookie: true });
+const csrfMiddleware = csrf({ cookie: true });
 
 
 var app = express();
@@ -34,31 +51,33 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(csrfMiddleware);
+app.use(csrfMiddleware);
 
-// app.all("*", (req, res, next) => {
-//   res.cookie("XSRF-TOKEN", req.csrfToken());
-//   next();
-// });
+app.all("*", (req, res, next) => {
+  res.cookie("XSRF-TOKEN", req.csrfToken());
+  next();
+});
 
-// app.all("*", async (req, res, next) => {
-//   const sessionCookie = req.cookies.session || "";
-//   try {
-//     req.user = await admin.auth().verifySessionCookie(sessionCookie, true /** checkRevoked */)
-//   } catch(error) {
-//     // console.log(error);
-//     // req.user = null
-//   }
-//   next();
-// });
+app.all("*", async (req, res, next) => {
+  const sessionCookie = req.cookies.session || "";
+  try {
+    let decodedIdToken = await admin.auth().verifySessionCookie(sessionCookie, true);
+    req.user = await (await admin.auth().getUser(decodedIdToken.uid));
+
+  } catch(error) {
+    // console.log(error);
+    // req.user = null
+  }
+  next();
+});
 
 var indexRouter = require('./routes/route');
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+// app.use(function(req, res, next) {
+//   next(createError(404));
+// });
 
 // // error handler
 // app.use(function(err, req, res, next) {

@@ -9,7 +9,7 @@
                 <a href="/play" class="nav-btn">Chơi</a>
                 <a href="/rank" class="nav-btn">Bảng xếp hạng</a>
                 <% if (typeof user !== 'undefined' && user != null) { %>
-                  <a href="/myaccount" class="nav-btn"><%= user.name %></a>
+                  <a href="/myaccount" class="nav-btn"><%= user.displayName %></a>
                 <% } else {%> 
                   <a href="/login" class="nav-btn">Đăng nhập</a>
                 <% } %>

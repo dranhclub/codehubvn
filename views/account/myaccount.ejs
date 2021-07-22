@@ -10,9 +10,17 @@
                 <div class="row">
                     <div class="col-xs-12 col-md-6">
                         <div style="color: #444; font-size: 20px">Tên</div>
-                        <h2><%= user.name %></h2>
+                        <h2><%= user.displayName %></h2>
                         <div style="color: #444; font-size: 20px">Email</div>
-                        <h2><%= user.email %> <%= user.email_verified ? "(Đã xác thực)":"Chưa xác thực" %></h2>
+                        <% if (user.emailVerified) { %>
+                            <h2><%= user.email %></h2>
+                        <% } else { %>
+                            <h2><%= user.email %></h2>
+                            <p>
+                                Email chưa xác thực.
+                                <a href="/checkemail" onclick="verifyEmail()">Xác thực email</a>
+                            </p>
+                        <% } %>
                         <div>
                             <a href="#" class="fantasy-btn">Sửa thông tin</a>
                             <a href="/logout" onclick="firebase.auth().signOut()" class="fantasy-btn">Đăng xuất</a>
@@ -24,11 +32,17 @@
                             <img src="<%= user.picture %>" alt="">
                         </div>
                     </div>
-                    <%= JSON.stringify(user) %>
+                    userRecord: <%= JSON.stringify(user) %>
                 </div>
             </div>
     </body>
 
 <%- include('../part/foot') %>
+
+<script>
+    function verifyEmail() {
+
+    }
+</script>
 
 </html>
