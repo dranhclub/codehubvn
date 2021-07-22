@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('./head') %>
+
+<body>
+    <div class="container">
+        <h1>Đăng nhập quản trị viên</h1>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập</label>
+                    <input type="text" id="username" class="form-control">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" id="password" class="form-control">
+                    <input type="checkbox" id="remember">
+                    <label for="remember">Lưu tài khoản</label>
+                    <div>
+                        <button onclick="login()" class="btn btn-primary">Đăng nhập</button>
+                    </div>
+                    <p id="message"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    function showMessage(message) {
+        document.getElementById("message").innerText = message;
+    }
+
+    function login() {
+        let username = document.getElementById("username").value;
+        let password = document.getElementById("password").value;
+        let remember = document.getElementById("remember").checked;
+
+        fetch('/admin/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+            },
+            body: JSON.stringify({username, password, remember})
+        }).then(resp => resp.json())
+        .then(data => {
+            if (data.code == "OK") {
+                showMessage("Đăng nhập thành công");
+                window.location = '/admin';
+            } else {
+                console.log(data);
+                showMessage(data.message);
+            }
+        });
+    }
+</script>
+
+</html>

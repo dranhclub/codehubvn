@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var admin = require('firebase-admin');
 var csrf = require('csurf');
-var nodemailer = require('./config/nodemailer.config')
 var firebase = require("firebase/app");
 require("firebase/analytics");
 require("firebase/auth");
@@ -23,12 +22,6 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-
-// nodemailer.sendConfirmationEmail(
-//   "Nguyen Huy Hoang",
-//   "dranh.club@gmail.com",
-//   "x878987x7x8x9xx0"
-// );
 
 var serviceAccount = require("./codehubvn-firebase-adminsdk-gy7iq-c6cb57b8a7.json");
 
@@ -59,20 +52,35 @@ app.all("*", (req, res, next) => {
 });
 
 app.all("*", async (req, res, next) => {
-  const sessionCookie = req.cookies.session || "";
-  try {
-    let decodedIdToken = await admin.auth().verifySessionCookie(sessionCookie, true);
-    req.user = await (await admin.auth().getUser(decodedIdToken.uid));
+  console.log("path:", req.path);
 
-  } catch(error) {
-    // console.log(error);
-    // req.user = null
+  if (req.path.startsWith("/admin")) {
+    const sessionCookie = req.cookies.adminSession || "";
+    console.log("session cookie:", sessionCookie);
+    if (sessionCookie !== "") {
+      req.adminUser = {username: '1'}
+    }
+  } else {
+    const sessionCookie = req.cookies.session || "";
+    try {
+      let decodedIdToken = await admin.auth().verifySessionCookie(sessionCookie, true);
+      req.user = await (await admin.auth().getUser(decodedIdToken.uid));
+  
+    } catch(error) {
+      // console.log(error);
+      // req.user = null
+    }
   }
+
   next();
 });
 
+
 var indexRouter = require('./routes/route');
+var adminRouter = require('./routes/adminRoute');
+const { JsonWebTokenError } = require('jsonwebtoken');
 app.use('/', indexRouter);
+app.use('/admin', adminRouter);
 
 // catch 404 and forward to error handler
 // app.use(function(req, res, next) {
