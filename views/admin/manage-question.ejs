@@ -27,10 +27,9 @@
                     <% questions.forEach(question => { %>
                         <tr>
                             <td><%= question.id %></td>
-                            <td><%= question.data.title %></td>
                             <td><%= question.data.text %></td>
                             <td>
-                                <img src="<%= question.data.image %>" alt="">
+                                <img src="<%= question.data.image %>" alt="" style="max-width: 200px;">
                             </td>
                             <td><%= question.data.video %></td>
                         </tr>

@@ -72,6 +72,8 @@
     </div>
 </body>
 
+<%- include('./foot') %> 
+
 <script>
     document.getElementById("text").addEventListener('input', (e) => {
         document.getElementById("text-preview").innerText = e.target.value;
@@ -87,8 +89,63 @@
         }
     });
 
-    function addQuestion() {
+    const db = firebase.firestore();
+
+    async function addQuestion() {
         var text = document.getElementById("text").value;
+        
+        // Get metadata
+        var metadataRef = db.collection("questions").doc("metadata");
+        var metadataDoc = await metadataRef.get();
+        var metadata = metadataDoc.data();
+        const newLastId = metadata.lastId + 1;
+        // Set question id
+        const questionId = `question_${newLastId}`;
+
+        // Upload image
+        var dataURLstring = document.getElementById("image-preview").src;
+        console.log("dataURLstring:", dataURLstring);
+        var imgRef = firebase.storage().ref(`images/${questionId}`);
+        var uploadTask = imgRef.putString(dataURLstring, 'data_url');
+        
+        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+            (snapshot) => {
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + progress + '% done');
+            }, 
+            (error) => {
+                console.log(error);
+            }, 
+            () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    console.log('File available at', downloadURL);
+                    addToDb(downloadURL);
+                });
+            }
+        );
+
+        // Add question to database
+        function addToDb(imgURL) {
+            var new_qst = db.collection("questions").doc(`question_${metadata.lastId}`);
+            new_qst.set({
+                text: text,
+                image: imgURL
+            }).then(()=>{
+                console.log("Added question to db");
+
+                // Increase last index of metadata
+                metadataRef.set({
+                    lastId: newLastId
+                }).then(()=>{
+                    console.log("updated metadata, lastId=", newLastId);
+                    window.location = '/admin/manage-question';
+                });
+            });
+        }
+
+        function updateMetadata() {
+
+        }
     }
 </script>
 
