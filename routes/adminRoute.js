@@ -52,7 +52,7 @@ router.get('/logout', (req, res) => {
 });
 
 /******************** */
-/*      Other         */
+/*      Index         */
 router.get('/', async (req, res) => {
   if (!req.adminUser) {
     res.redirect('/admin/login');
@@ -62,7 +62,10 @@ router.get('/', async (req, res) => {
   res.render('admin/admin-index', { title: 'Trang chủ quản trị' });
 });
 
-router.get('/questions', async (req, res) => {
+/******************** */
+/*      Question         */
+
+router.get('/manage-question', async (req, res) => {
   if (!req.adminUser) {
     res.redirect('/admin/login');
     return;
@@ -72,11 +75,21 @@ router.get('/questions', async (req, res) => {
   querySnapshot.forEach(doc => {
     questions.push({ id: doc.id, data: doc.data() });
   });
-  res.render('admin/questions', { title: 'Quản lý câu hỏi', questions: questions });
+  res.render('admin/manage-question', { title: 'Quản lý câu hỏi', questions: questions });
 });
 
+router.get('/add-question', (req, res) => {
+  if (!req.adminUser) {
+    res.redirect('/admin/login');
+    return;
+  }
 
-router.get('/users', async (req, res) => {
+  res.render('admin/add-question', {title: 'Thêm câu hỏi'});
+});
+
+/******************** */
+/*      Users         */
+router.get('/manage-user', async (req, res) => {
   if (!req.adminUser) {
     res.redirect('/admin/login');
     return;
@@ -100,7 +113,7 @@ router.get('/users', async (req, res) => {
     return users
   })
   .then(users => {
-    res.render('admin/users', { title: 'Quản lý người dùng' , users: users});
+    res.render('admin/manage-user', { title: 'Quản lý người dùng' , users: users});
   })
   .catch((error) => {
     console.log('Error listing users:', error);

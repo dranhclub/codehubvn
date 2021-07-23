@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('./head') %>
+
+<style>
+    #preview *{
+        font-family: 'Play';
+    }
+</style>
+
+<body>
+    <%- include('./nav') %>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <h1>Thêm câu hỏi</h1>
+                <div class="form-group">
+                    <!-- <div class="mb-3">
+                        <label for="title" class="form-label">Tiêu đề</label>
+                        <input type="text" id="title" class="form-control">
+                    </div> -->
+                    <div class="mb-3">
+                        <label for="level" class="form-label">Độ khó</label>
+                        <select class="form-select" id="level">
+                            <option value="1" selected>Thường</option>
+                            <option value="2">Khó</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="text" class="form-label">Mô tả</label>
+                        <textarea name="" id="text" cols="30" rows="10" class="form-control"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="image-file-btn">Hình ảnh</label>
+                        <input type="file" class="form-control" id="image-file-btn" accept="image/*">
+                    </div>
+                    <div>
+                        <a href="#" onclick="addQuestion()" class="btn btn-primary">Xác nhận</a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-12 col-md-6">
+                <h1>Xem trước</h1>
+                <div id="preview">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a class="left" href="#" role="button" data-slide="prev">
+                            <i class="fa fa-chevron-left" aria-hidden="true" style="font-size: xx-large;"></i>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <h1 class="text-center">Câu hỏi 1</h1>
+                        <a class="right" href="#" role="button" data-slide="next">
+                            <i class="fa fa-chevron-right" aria-hidden="true" style="font-size: xx-large;"></i>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+
+                    <p id="text-preview">
+                        Amet culpa ut pariatur sit nostrud id excepteur laborum in veniam excepteur aliquip. Ea adipisicing nostrud minim proident. Enim exercitation ut ullamco nostrud incididunt. Eiusmod cupidatat incididunt mollit sunt et veniam. Nostrud ut officia anim nostrud nostrud. Tempor sit labore ea et sunt ipsum veniam enim. Id velit id culpa reprehenderit ex enim nulla magna laboris consequat Lorem labore.
+                    </p>
+
+                    <div class="text-center">
+                        <img src="" alt="" data-action="zoom" id="image-preview" class="img-thumbnail">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+<script>
+    document.getElementById("text").addEventListener('input', (e) => {
+        document.getElementById("text-preview").innerText = e.target.value;
+    });
+
+    document.getElementById("image-file-btn").addEventListener('change', e => {
+        if (e.target.files && e.target.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById("image-preview").src = e.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    function addQuestion() {
+        var text = document.getElementById("text").value;
+    }
+</script>
+
+</html>
