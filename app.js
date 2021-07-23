@@ -56,7 +56,6 @@ app.all("*", async (req, res, next) => {
 
   if (req.path.startsWith("/admin")) {
     const sessionCookie = req.cookies.adminSession || "";
-    console.log("session cookie:", sessionCookie);
     if (sessionCookie !== "") {
       req.adminUser = {username: '1'}
     }

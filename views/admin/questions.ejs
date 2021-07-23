@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('./head') %>
+
+<body>
+    <%- include('./nav') %>
+    
+    <div class="container">
+        <h1>Quản lý câu hỏi</h1>
+        <div class="row">
+            <div class="col">
+                Câu hỏi
+                
+                <table class="table">
+                    <thead>
+                        <td>id</td>
+                        <td>text</td>
+                        <td>img</td>
+                        <td>video</td>
+                    </thead>
+                    <% questions.forEach(question => { %>
+                        <tr>
+                            <td><%= question.id %></td>
+                            <td><%= question.data.title %></td>
+                            <td><%= question.data.text %></td>
+                            <td>
+                                <img src="<%= question.data.image %>" alt="">
+                            </td>
+                            <td><%= question.data.video %></td>
+                        </tr>
+                    <% }); %>
+
+                </table>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+<script>
+    
+</script>
+
+</html>

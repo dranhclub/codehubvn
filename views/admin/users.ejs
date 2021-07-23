@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('./head') %>
+
+<body>
+    <%- include('./nav') %>
+    
+    <div class="container">
+        <h1>Quản lý người dùng</h1>
+        <div class="row">
+            <div class="col">
+                Người dùng
+                
+                <table class="table">
+                    <thead>
+                        <td>uid</td>
+                        <td>email</td>
+                        <td>emailVerified</td>
+                        <td>displayName</td>
+                        <td>photo</td>
+                        <td>disabled</td>
+                    </thead>
+
+                    <% users.forEach(user => { %>
+                        <tr>
+                            <td><%= user.uid %></td>
+                            <td><%= user.email %></td>
+                            <td><%= user.emailVerified %></td>
+                            <td><%= user.displayName %></td>
+                            <td>
+                                <img src="<%= user.photoURL %>" alt="" width="50" height="50">
+                            </td>
+                            <td><%= user.disabled %></td>
+                        </tr>
+                    <% }); %>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+<script>
+    
+</script>
+
+</html>
