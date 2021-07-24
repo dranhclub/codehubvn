@@ -195,59 +195,87 @@
     }
 
     async function addQuestion() {
+        // Get fields
         var text = document.getElementById("text").value;
-        
-        // Get metadata
-        var metadataRef = db.collection("questions").doc("metadata");
-        var metadataDoc = await metadataRef.get();
-        var metadata = metadataDoc.data();
-        const newLastId = metadata.lastId + 1;
+        var images = [];
+        document.getElementById("image-preview").querySelectorAll("img").forEach(element => {
+            images.push(element.src);
+        });
+        var ytVideoIds = [];
+        document.getElementById("video-form").querySelectorAll("input").forEach(element => {
+            ytVideoIds.push(element.value);
+        });
+        var answer = document.getElementById("answer").value;
+        console.log("Text:", text);
+        console.log("Image count:", images.length);
+        console.log("Videos: ", ytVideoIds);
+        console.log("Answer: ", answer);
+
+        // Get last question id, update new last id
+        var questionsMetadataRef = db.collection("metadata").doc("questions");
+        var questionMetadataDoc = await questionsMetadataRef.get();
+        var questionMetadata = questionMetadataDoc.data();
+        const newLastId = questionMetadata.lastId + 1;
+        questionsMetadataRef.set({
+            lastId: newLastId
+        });
+
         // Set question id
         const questionId = `question_${newLastId}`;
 
-        // Upload image
-        var dataURLstring = document.getElementById("image-preview").src;
-        console.log("dataURLstring:", dataURLstring);
-        var imgRef = firebase.storage().ref(`images/${questionId}`);
-        var uploadTask = imgRef.putString(dataURLstring, 'data_url');
-        
-        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
-            (snapshot) => {
-                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log('Upload is ' + progress + '% done');
-            }, 
-            (error) => {
-                console.log(error);
-            }, 
-            () => {
-                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    console.log('File available at', downloadURL);
-                    addToDb(downloadURL);
-                });
-            }
-        );
 
-        // Add question to database
-        function addToDb(imgURL) {
-            var new_qst = db.collection("questions").doc(`question_${metadata.lastId}`);
-            new_qst.set({
-                text: text,
-                image: imgURL
-            }).then(()=>{
-                console.log("Added question to db");
+        async function uploadTaskPromise() {
+            return new Promise( (resolve, reject) => {
 
-                // Increase last index of metadata
-                metadataRef.set({
-                    lastId: newLastId
-                }).then(()=>{
-                    console.log("updated metadata, lastId=", newLastId);
-                    window.location = '/admin/manage-question';
-                });
             });
+        } 
+
+        // Upload images
+        const uploadTasks = [];
+        const imgDownloadURLs = [];
+        var doneTaskNum = 0;
+        for (let i = 0; i < images.length; i++) {
+            var imgRef = firebase.storage().ref(`images/questions_${questionId}_${i}`);
+
+            var uploadTask = imgRef.putString(images[i], 'data_url');
+
+            uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+                (snapshot) => {
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log(`Upload image ${i} is ${progress} + % done`);
+                }, 
+                (error) => {
+                    console.log(error);
+                }, 
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        console.log('File available at', downloadURL);
+                        imgDownloadURLs[i] = downloadURL;
+
+                        doneTaskNum++;
+
+                        if (doneTaskNum == images.length) {
+                            upQuestionToDB();
+                        }
+
+                    });
+                }
+            );
         }
 
-        function updateMetadata() {
+        // Add question to database
+        function upQuestionToDB() {
+            var new_qst = db.collection("questions").doc(`question_${newLastId}`);
 
+            new_qst.set({
+                text: text,
+                images: imgDownloadURLs,
+                ytVideoIds: ytVideoIds,
+                answer: answer
+            }).then(()=>{
+                console.log("Added question to db");
+                window.location = '/admin/manage-question';
+            });
         }
     }
 </script>

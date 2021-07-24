@@ -29,9 +29,15 @@
                             <td><%= question.id %></td>
                             <td><%= question.data.text %></td>
                             <td>
-                                <img src="<%= question.data.image %>" alt="" style="max-width: 200px;">
+                                <% question.data.images.forEach((image=>{ %>
+                                    <img src="<%= image %>" alt="" style="max-width: 200px;" class="img-thumbnail">
+                                <% })); %>
                             </td>
-                            <td><%= question.data.video %></td>
+                            <td>
+                                <% question.data.ytVideoIds.forEach((id=>{ %>
+                                    <div><%= id %></div>
+                                <% })); %>
+                            </td>
                         </tr>
                     <% }); %>
 
