@@ -17,10 +17,6 @@
             <div class="col-12 col-md-6">
                 <h1>Thêm câu hỏi</h1>
                 <div class="form-group">
-                    <!-- <div class="mb-3">
-                        <label for="title" class="form-label">Tiêu đề</label>
-                        <input type="text" id="title" class="form-control">
-                    </div> -->
                     <div class="mb-3">
                         <label for="level" class="form-label">Độ khó</label>
                         <select class="form-select" id="level">
@@ -32,13 +28,28 @@
                         <label for="text" class="form-label">Mô tả</label>
                         <textarea name="" id="text" cols="30" rows="10" class="form-control"></textarea>
                     </div>
+                    <div class="mb-3" id="image-form">
+                        <!-- Image input placeholder -->
+                    </div>
                     <div class="mb-3">
-                        <label for="image-file-btn">Hình ảnh</label>
-                        <input type="file" class="form-control" id="image-file-btn" accept="image/*">
+                        <a href="javascript:void(0);" onclick="moreImage()" class="btn btn-info">Thêm hình ảnh</a>
                     </div>
-                    <div>
-                        <a href="#" onclick="addQuestion()" class="btn btn-primary">Xác nhận</a>
+                    <div class="mb-3" id="video-form">
+                        <!-- Video input placeholder -->
                     </div>
+                    <div class="mb-3">
+                        <a href="javascript:void(0);" onclick="moreVideo()" class="btn btn-info">Thêm video</a>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="answer" class="form-label">Đáp án</label>
+                        <textarea id="answer" cols="30" rows="3" class="form-control"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <a href="javascript:void(0);" onclick="addQuestion()" class="btn btn-primary">Xác nhận</a>
+                    </div>
+
                 </div>
             </div>
 
@@ -47,12 +58,12 @@
                 <h1>Xem trước</h1>
                 <div id="preview">
                     <div class="d-flex justify-content-between align-items-center">
-                        <a class="left" href="#" role="button" data-slide="prev">
+                        <a class="left" href="javascript:void(0);" role="button" data-slide="prev">
                             <i class="fa fa-chevron-left" aria-hidden="true" style="font-size: xx-large;"></i>
                             <span class="sr-only">Previous</span>
                         </a>
                         <h1 class="text-center">Câu hỏi 1</h1>
-                        <a class="right" href="#" role="button" data-slide="next">
+                        <a class="right" href="javascript:void(0);" role="button" data-slide="next">
                             <i class="fa fa-chevron-right" aria-hidden="true" style="font-size: xx-large;"></i>
                             <span class="sr-only">Next</span>
                         </a>
@@ -62,8 +73,12 @@
                         Amet culpa ut pariatur sit nostrud id excepteur laborum in veniam excepteur aliquip. Ea adipisicing nostrud minim proident. Enim exercitation ut ullamco nostrud incididunt. Eiusmod cupidatat incididunt mollit sunt et veniam. Nostrud ut officia anim nostrud nostrud. Tempor sit labore ea et sunt ipsum veniam enim. Id velit id culpa reprehenderit ex enim nulla magna laboris consequat Lorem labore.
                     </p>
 
-                    <div class="text-center">
-                        <img src="" alt="" data-action="zoom" id="image-preview" class="img-thumbnail">
+                    <div id="image-preview" class="text-center">
+                        <!-- Image preview placeholder -->
+                    </div>
+
+                    <div id="video-preview" class="text-center">
+                        <!-- Video preview placeholder -->
                     </div>
                 </div>
             </div>
@@ -75,21 +90,109 @@
 <%- include('./foot') %> 
 
 <script>
+    const MAX_IMAGE_NUM = 5;
+    const MAX_VIDEO_NUM = 2;
+
+    // Event change text => update preview text
     document.getElementById("text").addEventListener('input', (e) => {
         document.getElementById("text-preview").innerText = e.target.value;
     });
 
-    document.getElementById("image-file-btn").addEventListener('change', e => {
-        if (e.target.files && e.target.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                document.getElementById("image-preview").src = e.target.result;
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    });
+    // Image
+    var imageIndex = 0;
+    var imageCount = 0;
+    function moreImage() {
+        if (imageCount < MAX_IMAGE_NUM) {
+            // Create input file button
+            document.getElementById("image-form").insertAdjacentHTML('beforeend', 
+            `
+                <div id="image-div-${imageIndex}">
+                    <label for="image-file-btn-${imageIndex}">Hình ảnh</label>
+                    <a href="javascript:void(0);" onclick="removeImage(${imageIndex})">Xoá</a>
+                    <input type="file" class="form-control" id="image-file-btn-${imageIndex}" accept="image/*">
+                </div>
+            `
+            );
 
-    const db = firebase.firestore();
+            // Create preview image
+            const imgPreview = document.createElement('img');
+            imgPreview.setAttribute("alt", `image-preview-${imageIndex}`);
+            imgPreview.setAttribute("id", `image-preview-${imageIndex}`);
+            imgPreview.setAttribute("class", `img-thumbnail`);
+            document.getElementById("image-preview").insertAdjacentElement('beforeend', imgPreview);
+
+            // Event inpit file button change => update preview image
+            document.getElementById(`image-file-btn-${imageIndex}`).addEventListener('change', e => {
+                if (e.target.files && e.target.files[0]) {
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        imgPreview.src = e.target.result;
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+
+            // Update image count variable
+            imageIndex++;
+            imageCount++;
+        } else {
+            alert(`Tối đa ${MAX_IMAGE_NUM} hình ảnh`);
+        }
+    }
+
+    function removeImage(id) {
+        document.getElementById(`image-div-${id}`).remove(); 
+        document.getElementById(`image-preview-${id}`).remove();
+
+        imageCount--;
+    }
+
+    // Video
+    var videoIndex = 0;
+    var videoCount = 0;
+    function moreVideo() {
+        if (videoCount < MAX_VIDEO_NUM) {
+            // Create input file button
+            document.getElementById("video-form").insertAdjacentHTML('beforeend', 
+            `
+                <div id="video-div-${videoIndex}">
+                    <label for="video-file-btn-${videoIndex}">Youtube video ID</label>
+                    <a href="javascript:void(0);" onclick="removeVideo(${videoIndex})">Xoá</a>
+                    <a href="javascript:void(0);" onclick="previewVideo(${videoIndex})" id="12345">OK</a>
+                    <input type="text" class="form-control" id="yt-video-id-${videoIndex}">
+                </div>
+            `
+            );
+    
+            // Update count variable
+            videoIndex++;
+            videoCount++;
+        } else {
+            alert(`Tối đa ${MAX_VIDEO_NUM} video`);
+        }
+    }
+
+    function previewVideo(id) {
+        console.log(`yt-video-id-${id}`);
+        const inputBox = document.getElementById(`yt-video-id-${id}`);
+        const videoId = inputBox.value;
+        document.getElementById("video-preview").insertAdjacentHTML('beforeend', 
+            `
+                <div id="video-preview-${id}">
+                    <iframe width="560" height="315" id="video-preview-${id}" src="https://www.youtube.com/embed/${videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+
+            `
+        );
+        inputBox.disabled = true;
+    }
+
+    function removeVideo(id) {
+        document.getElementById(`video-div-${id}`).remove();
+        document.getElementById(`video-preview-${id}`)?.remove();
+
+        videoCount--;
+    }
 
     async function addQuestion() {
         var text = document.getElementById("text").value;
