@@ -28,16 +28,52 @@ a {
 
 nav{
   background-color: #A2744A;
-  height: 50px;
+  /* height: 50px; */
+  margin-bottom: 20px;
 }
 
 nav .nav-btn {
-  margin: 0 10px;
-  color: white
+  padding: 16px 16px;
+  color: white;
+  text-decoration: none;
+  font-size: 17px;
 }
 
-nav text {
+nav .nav-btn:hover {
+  background-color: #666;
+}
 
+nav .logo:hover {
+  cursor: pointer;
+}
+
+nav .logo-text {
+  padding: 10px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: white;
+}
+
+nav.nav-small {
+  display: none;
+}
+
+nav.nav-small .icon {
+  color: white;
+  text-decoration: none;
+  font-size: 30px;
+  padding: 4px 6px;
+}
+
+
+@media screen and (max-width: 768px) {
+  nav.nav-large {
+    display: none;
+  }
+
+  nav.nav-small {
+    display: flex;
+  }
 }
 
 footer{

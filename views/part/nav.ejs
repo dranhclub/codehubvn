@@ -1,11 +1,13 @@
-<nav>
+<nav class="nav-large">
     <div class="container">
-        <div class="d-flex justify-content-between">
-            <div>
-                <img src="https://via.placeholder.com/50x50?text=logo" alt="">
-                <a href="/" class="nav-btn">Home</a>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center" onclick="window.location='/'">
+                <div class="logo">
+                    <img src="/images/icon_white.png" alt="" width="30" height="30">
+                </div>
+                <a href="/" class="logo-text">Codehubvn</a>
             </div>  
-            <div class="align-self-center">
+            <div class="d-flex">
                 <a href="/play" class="nav-btn">Chơi</a>
                 <a href="/rank" class="nav-btn">Bảng xếp hạng</a>
                 <% if (typeof user !== 'undefined' && user != null) { %>
@@ -17,3 +19,42 @@
         </div>
     </div>
 </nav>
+
+<nav class="nav-small">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center" onclick="window.location='/'">
+                <div class="logo">
+                    <img src="/images/icon_white.png" alt="" width="30" height="30">
+                </div>
+                <a href="/" class="logo-text">Codehubvn</a>
+            </div>  
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                <i class="fa fa-bars"></i>
+            </a>
+        </div>
+        <div class="d-none" id="nav-menu">
+            <a href="/play" class="nav-btn">Chơi</a>
+            <a href="/rank" class="nav-btn">Bảng xếp hạng</a>
+            <% if (typeof user !== 'undefined' && user != null) { %>
+              <a href="/myaccount" class="nav-btn"><%= user.displayName %></a>
+            <% } else {%> 
+              <a href="/login" class="nav-btn">Đăng nhập</a>
+            <% } %>
+        </div>
+    </div>
+</nav>
+
+<script>
+    var navMenuDisplay = false;
+    function myFunction() {
+        var navMenu = document.getElementById("nav-menu");
+        if (navMenuDisplay) {
+            navMenu.className = "d-none";
+            navMenuDisplay = false;
+        } else {
+            navMenu.className = "d-flex flex-column";
+            navMenuDisplay = true;
+        }
+    }
+</script>
