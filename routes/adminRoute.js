@@ -125,4 +125,16 @@ router.get('/manage-user', async (req, res) => {
   });
 
 });
+
+/******************** */
+/*      Play rule     */
+
+router.get("/playrule", async (req, res) => {
+  const otherMetaRef = db.collection("metadata").doc("others");
+  const otherMetaDoc = await otherMetaRef.get();
+  var otherMeta = otherMetaDoc.data();
+  var playRule = otherMeta.playRule;
+
+  res.render('admin/playrule', {title: 'Thay đổi luật chơi', playRule});
+});
 module.exports = router;

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('./head') %>
+
+<body>
+    <%- include('./nav') %>
+    <div class="container">
+        <h1>Thay đổi luật chơi</h1>
+        <div class="form-group">
+            <label for="playrule" class="form-label">Luật chơi</label>
+            <textarea name="" id="playrule" cols="30" rows="10" class="form-control">
+<%= playRule %>
+            </textarea>
+        </div>
+        <p></p>
+        <a href="#" onclick="save()" class="btn btn-info">Lưu</a>
+    </div>
+</body>
+
+<%- include('./foot') %>
+
+<script>
+    async function save() {
+        const otherMetaRef = db.collection("metadata").doc("others");
+        const otherMetaDoc = await otherMetaRef.get();
+        const otherMeta = otherMetaDoc.data();
+        await otherMetaRef.update({
+            playRule: document.getElementById("playrule").value,
+        });
+
+        alert("Đã lưu")
+    }
+</script>
+
+</html>

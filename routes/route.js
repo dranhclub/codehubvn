@@ -9,8 +9,9 @@ var nodemailer = require('../config/nodemailer.config')
 
 const db = admin.firestore();
 
-router.get('/', function (req, res, next) {
-  res.render('other/index', { title: 'Codehubvn', user: req.user });
+router.get('/', async function (req, res, next) {
+  const playRule = (await db.collection("metadata").doc("others").get()).data().playRule;
+  res.render('other/index', { title: 'Codehubvn', user: req.user, playRule });
 });
 
 router.get('/project', function (req, res, next) {
