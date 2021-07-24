@@ -33,27 +33,32 @@
   <%- include('../part/foot') %>
 
   <script>
-    function validateEmail(email) {
-      const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(email);
-    }
-
     function showMessage(message) {
       document.getElementById("message").innerText = message;  
     }
 
     function register() {
+      // Get fields
       let name = document.getElementById('name').value;
       let email = document.getElementById('email').value;
       let password = document.getElementById('password').value;
 
+      // Validate fields
+      if (name == "" || email == "" || password == "" || !validateEmail(email)) {
+        alert("Vui lòng điền thông tin hợp lệ");
+        return;
+      }
+
+      // Register 
       firebase.auth().createUserWithEmailAndPassword(email, password)
         .then((userCredential)=>{
-          user = userCredential.user;
+          var user = userCredential.user;
           user.updateProfile({
             displayName: name,
           }).then(()=>{
             showMessage("Đăng ký thành công");
+
+            // POST to server
             user.getIdToken()
               .then((idToken) => {
                 fetch('/login', {
@@ -70,9 +75,13 @@
                     }
                   });
               });
-          }).catch(error => {
+          }), 
+          ((error) => {
             showMessage(error.message);
-          })
+          });
+
+          setIdForUser(user);
+
         })
         .catch(function(error) {
           var errorCode = error.code;
@@ -93,34 +102,6 @@
           showMessage("");
         });
       });
-
-      // if (name == "" || email == "" || password == "" || !validateEmail(email)) {
-      //   alert("Vui lòng điền thông tin hợp lệ");
-      //   return;
-      // }
-
-      // fetch('/register', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify({name, email, password})
-      // })
-      // .then(resp => resp.json())
-      // .then(data => {
-      //   if (data.code == "EMAIL_EXISTED") {
-      //     document.getElementById("message").innerText = data.message;
-      //   } else if (data.code == "OK") {
-      //     document.getElementById("message").innerText = data.message;
-      //     setTimeout(()=>{
-      //       window.location = '/checkemail';
-      //     }, 1000);
-      //   } else if (data.code == "INVALID_EMAIL") {
-      //       document.getElementById("message").innerText = data.message;  
-      //   } else {
-      //     document.getElementById("message").innerText = JSON.stringify(data);
-      //   }
-      // });
     }
   </script>
 

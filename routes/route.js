@@ -9,20 +9,6 @@ var nodemailer = require('../config/nodemailer.config')
 
 const db = admin.firestore();
 
-router.get('/test_create_question', async (req, res) => {
-  for (let i = 0; i < 5; i++) {
-    const docRef = db.collection("questions").doc(`question_${i}`);
-    docRef.set({
-      title: `Câu hỏi ${i}`,
-      text: 'Ullamco aute in esse irure. Id tempor cillum fugiat irure sunt sunt consequat aliqua cillum. Veniam deserunt ea occaecat adipisicing anim ipsum. Aliqua labore aute duis magna eiusmod magna amet pariatur dolore in aliqua elit non aliquip.',
-      image: `https://picsum.photos/seed/question_${i}/200/300`,
-      video: `[url]`,
-    });
-  }
-
-  res.send("OK");
-});
-
 router.get('/', function (req, res, next) {
   res.render('other/index', { title: 'Codehubvn', user: req.user });
 });

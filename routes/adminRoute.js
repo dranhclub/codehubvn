@@ -112,7 +112,11 @@ router.get('/manage-user', async (req, res) => {
     }
     return users
   })
-  .then(users => {
+  .then(async (users) => {
+    for (let i = 0; i < users.length; i++) {
+      let userInfo = await db.collection("users").doc(users[i].email).get();
+      users[i].id = userInfo.data().id;
+    }
     res.render('admin/manage-user', { title: 'Quản lý người dùng' , users: users});
   })
   .catch((error) => {

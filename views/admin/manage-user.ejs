@@ -14,26 +14,45 @@
                 
                 <table class="table">
                     <thead>
-                        <td>uid</td>
-                        <td>email</td>
-                        <td>emailVerified</td>
-                        <td>displayName</td>
-                        <td>photo</td>
-                        <td>disabled</td>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Xác thực email</th>
+                            <th scope="col">Tên hiển thị</th>
+                            <th scope="col">Ảnh đại diện</th>
+                            <th scope="col">Vô hiệu hoá</th>
+                        </tr>
                     </thead>
-
+                    <tbody>
                     <% users.forEach(user => { %>
                         <tr>
-                            <td><%= user.uid %></td>
+                            <th scope="row"><%= user.id %></th>
                             <td><%= user.email %></td>
-                            <td><%= user.emailVerified %></td>
+                            <td>
+                                <% if (user.emailVerified) { %>
+                                    <i class="fa fa-check-circle-o" style="color: green;"></i>
+                                <% } else { %>
+                                    <i class="fa fa-times-circle-o" style="color: red;"></i>
+                                <% } %>
+                            </td>
                             <td><%= user.displayName %></td>
                             <td>
+                                <% if (user.photoURL) { %>
                                 <img src="<%= user.photoURL %>" alt="" width="50" height="50">
+                                <% } else { %>
+                                <span>default</span>
+                                <% } %>
                             </td>
-                            <td><%= user.disabled %></td>
+                            <td>
+                                <% if (user.disabled) { %>
+                                    Có
+                                <% } else { %>
+                                    Không
+                                <% } %>
+                            </td>
                         </tr>
                     <% }); %>
+                    </tbody>
                 </table>
             </div>
         </div>

@@ -81,11 +81,6 @@
   <%- include('../part/foot') %>
 
   <script>
-    function validateEmail(email) {
-      const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(email);
-    }
-
     function showMessage(message) {
       document.getElementById("message").innerText = message;  
     }
@@ -142,11 +137,16 @@
       var provider = new firebase.auth.GoogleAuthProvider();
       provider.addScope('profile');
       provider.addScope('email');
-      firebase.auth().signInWithPopup(provider).then(function(result) {
+      firebase.auth().signInWithPopup(provider).then(function(userCredential) {
         // This gives you a Google Access Token.
-        var token = result.credential.accessToken;
+        var token = userCredential.credential.accessToken;
         // The signed-in user info.
-        var user = result.user;
+        var user = userCredential.user;
+
+        if (userCredential.additionalUserInfo?.isNewUser) {
+          setIdForUser(user);
+        }
+
         user.getIdToken().then(idToken => {
           fetch('/login', {
             method: 'POST',

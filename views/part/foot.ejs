@@ -31,4 +31,30 @@ crossorigin="anonymous"></script>
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
 
+    const db = firebase.firestore();
+
+</script>
+
+
+<script>
+    function validateEmail(email) {
+      const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
+    }
+</script>
+
+<script>
+    function setIdForUser(user) {
+        var metaRef = db.collection("metadata").doc("users");
+          metaRef.get().then(doc => {
+            const lastId = doc.data().lastId;
+            const newId = lastId + 1;
+            metaRef.set({lastId: newId});
+
+            var userRef = db.collection("users").doc(user.email);
+            userRef.set({
+              id: newId
+            }).then(() => console.log("Set id ", newId, " for user"));
+          });
+    }
 </script>
