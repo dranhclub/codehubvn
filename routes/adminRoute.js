@@ -97,9 +97,10 @@ router.get('/manage-question/:question_id', async (req, res) => {
 });
 
 router.get('/group-question',async (req, res) => {
-  const questionOrderRef = db.collection("metadata").doc("questionOrder");
-  const questionOrderDoc = await questionOrderRef.get();
-  const questionOrder = questionOrderDoc.data();
+  const questionRef = db.collection("metadata").doc("questions");
+  const questionDoc = await questionRef.get();
+  const questionOrder = questionDoc.data().questionOrder;
+  const payQuestion = questionDoc.data().payQuestion;
 
   const questionCollectionRef = db.collection("questions");
   const questionsQuerysnapshot = await questionCollectionRef.get();
@@ -109,7 +110,7 @@ router.get('/group-question',async (req, res) => {
     question.id = doc.id;
     questions.push(question);
   })
-  res.render('admin/group-question', {title: 'Quản lý bộ câu hỏi', questions, questionOrder});
+  res.render('admin/group-question', {title: 'Quản lý bộ câu hỏi', questions, questionOrder, payQuestion});
 });
 
 /******************** */

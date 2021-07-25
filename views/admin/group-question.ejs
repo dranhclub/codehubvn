@@ -8,15 +8,27 @@
     
     <div class="container">
         <h1>Quản lý bộ câu hỏi</h1>
+        <hr>
         <div class="row">
             <div class="col-12 col-md-6">
                 <h2>Thường</h2>
-                <div class="input-group">
-                    <input id="normal-order" type="text" class="form-control" placeholder="Nhập thứ tự">
-                    <div class="input-group-append">
-                        <a href="javascript:void(0);" class="btn btn-primary" onclick="normalOK()">OK</a>
+                <div class="row">
+                    <div class="col">
+                        <strong>Thứ tự</strong>
+                        <div class="input-group">
+                            <input id="normal-order" type="text" class="form-control" placeholder="VD: 1,2,3,4">
+                            <a href="javascript:void(0);" class="btn btn-primary input-group-append" onclick="normalOK()">OK</a>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <strong>Mốc yêu cầu trả phí</strong>
+                        <div class="input-group">
+                            <input id="normal-pay-question" type="text" class="form-control" placeholder="VD: 3" value="<%=payQuestion.normal%>">
+                            <a href="javascript:void(0);" class="btn btn-primary input-group-append" onclick="normalPayOK()">OK</a>
+                        </div>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col">
                         <strong>Thứ tự đã chọn</strong>
@@ -39,16 +51,33 @@
                                 <% } %>
                             <% }); %>
                         </ul>
-                    </div>                 
+                    </div>
+                </div>
+                <div class="row">
+
                 </div>
             </div>
-
+        </div>
+        <hr>
+        <div class="row">
             <div class="col-12 col-md-6">
                 <h2>Khó</h2>
-                <div class="input-group">
-                    <input id="hard-order" type="text" class="form-control" placeholder="Nhập thứ tự">
-                    <div class="input-group-append">
-                        <a href="javascript:void(0);" class="btn btn-primary" onclick="hardOK()">OK</a>
+                <div class="row">
+                    <div class="col">
+                        <strong>Thứ tự</strong>
+                        <div class="input-group">
+                            <input id="hard-order" type="text" class="form-control" placeholder="VD: 1,2,3,4">
+                            <a href="javascript:void(0);" class="btn btn-primary input-group-append" onclick="hardOK()">OK</a>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="col">
+                            <strong>Mốc yêu cầu trả phí</strong>
+                            <div class="input-group">
+                                <input id="hard-pay-question" type="text" class="form-control" placeholder="VD: 3" value="<%=payQuestion.hard%>">
+                                <a href="javascript:void(0);" class="btn btn-primary input-group-append" onclick="hardPayOK()">OK</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -113,8 +142,8 @@
 
         }
 
-        db.collection("metadata").doc("questionOrder").update({
-            normal: questionIds
+        db.collection("metadata").doc("questions").update({
+            "questionOrder.normal": questionIds
         }).then(() => {
             alert("Đã cập nhật");
             window.location.reload();
@@ -140,11 +169,41 @@
 
         }
 
-        db.collection("metadata").doc("questionOrder").update({
-            hard: questionIds
+        db.collection("metadata").doc("questions").update({
+            "questionOrder.hard": questionIds
         }).then(() => {
             alert("Đã cập nhật");
             window.location.reload();
+        });
+    }
+
+    function normalPayOK() {
+        const payQuestionStr = document.getElementById("normal-pay-question").value;
+        const payQuestion = parseInt(payQuestionStr);
+        if (isNaN(payQuestion)) {
+            alert('Giá trị không hợp lệ');
+            return;
+        }
+
+        db.collection("metadata").doc("questions").update({
+            'payQuestion.normal': payQuestion
+        }).then(()=>{
+            alert("Đã cập nhật");
+        });
+    }
+
+    function hardPayOK() {
+        const payQuestionStr = document.getElementById("hard-pay-question").value;
+        const payQuestion = parseInt(payQuestionStr);
+        if (isNaN(payQuestion)) {
+            alert('Giá trị không hợp lệ');
+            return;
+        }
+        
+        db.collection("metadata").doc("questions").update({
+            'payQuestion.hard': payQuestion
+        }).then(()=>{
+            alert("Đã cập nhật");
         });
     }
 </script>
