@@ -23,7 +23,7 @@ function removeAccents(str) {
 }
 
 function normalize(str) {
-    return removeAccents(str).replace(/\s+/g, ' ').trim().toLowerCase();
+    return removeAccents(str).replace(/,/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
 }
 
 exports.compare = function (strA, strB) {
