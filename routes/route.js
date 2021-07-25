@@ -6,7 +6,8 @@ var firebase = require("firebase/app");
 var jwt = require('jsonwebtoken');
 const { user } = require('../config/auth.config');
 // const { pass, user } = require('../config/auth.config');
-var nodemailer = require('../config/nodemailer.config')
+var nodemailer = require('../config/nodemailer.config');
+var compareStr = require('../helper/compareStr');
 
 const db = admin.firestore();
 
@@ -111,9 +112,18 @@ router.get('/forgot', (req, res) => {
 /**************** */
 /* My account  */
 
-router.get('/myaccount', function (req, res, next) {
+router.get('/myaccount', async function (req, res, next) {
   if (req.user) {
-    res.render('account/myaccount', { title: 'Thông tin tài khoản', user: req.user });
+    const userRef = db.collection("users").doc(req.user.email);
+    const userData = (await userRef.get()).data();
+    req.user.id = userData.id;
+    req.user.current = userData.current;
+    req.user.answer = userData.answer;
+
+    const questionMetadataRef = db.collection("metadata").doc("questions");
+    const questionMetadata = (await questionMetadataRef.get()).data();
+
+    res.render('account/myaccount', { title: 'Thông tin tài khoản', user: req.user, questionMetadata });
   } else {
     res.redirect('/login');
   }
@@ -249,7 +259,7 @@ router.post('/answer', async (req, res) => {
     });
   } else {
     // TODO: Need other validate
-    if (questionDoc.data().answer === userAnswer) {
+    if (compareStr(questionDoc.data().answer, userAnswer)) {
       
       // Save answer time
       const level = questionDoc.data().level;
@@ -284,19 +294,6 @@ router.post('/answer', async (req, res) => {
   }
 });
 
-// router.get('/play/:id', async function (req, res, next) {
-//   if (req.user) {
-//     const questionDocRef = db.collection("questions").doc(`question_${req.params.id}`);
-//     let question = await questionDocRef.get();
-//     if (question.exists) {
-//       res.render('play/play', { title: 'Chơi!', user: req.user, question: question.data() });
-//     } else {
-//       res.send("Question id not exist");
-//     }
-//   } else {
-//     res.redirect('/login');
-//   }
-// });
 
 router.get('/rank', function (req, res, next) {
   res.render('other/rank', { title: 'Bảng xếp hạng', user: req.user });

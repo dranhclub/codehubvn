@@ -11,6 +11,10 @@ a {
   font-family: 'Play';
 }
 
+.container {
+  background-color: rgba(255,255,255,0.75)
+}
+
 #background{
   content: "";
   position: fixed;
@@ -30,6 +34,10 @@ nav{
   background-color: #A2744A;
   /* height: 50px; */
   margin-bottom: 20px;
+}
+
+nav .container {
+  background-color: #A2744A;
 }
 
 nav .nav-btn {
