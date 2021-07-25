@@ -44,17 +44,25 @@ crossorigin="anonymous"></script>
 </script>
 
 <script>
-    function setIdForUser(user) {
-        var metaRef = db.collection("metadata").doc("users");
-          metaRef.get().then(doc => {
-            const lastId = doc.data().lastId;
-            const newId = lastId + 1;
-            metaRef.set({lastId: newId});
+    async function initUser(user) {
+      var metaRef = db.collection("metadata").doc("users");
+      metaRef.get().then(doc => {
+        const lastId = doc.data().lastId;
+        const newId = lastId + 1;
+        metaRef.set({lastId: newId});
 
-            var userRef = db.collection("users").doc(user.email);
-            userRef.set({
-              id: newId
-            }).then(() => console.log("Set id ", newId, " for user"));
-          });
+        var userRef = db.collection("users").doc(user.email);
+        userRef.set({
+          id: newId,
+          current: {
+            normal: 0,
+            hard: 0
+          },
+          answer: {
+            normal: [],
+            hard: []
+          }
+        }).then(() => console.log("Set id ", newId, " for user"));
+      });
     }
 </script>

@@ -8,7 +8,7 @@
                 <a href="/" class="logo-text">Codehubvn</a>
             </div>  
             <div class="d-flex">
-                <a href="/play" class="nav-btn">Chơi</a>
+                <a href="/chooselevel" class="nav-btn">Chơi</a>
                 <a href="/rank" class="nav-btn">Bảng xếp hạng</a>
                 <% if (typeof user !== 'undefined' && user != null) { %>
                   <a href="/myaccount" class="nav-btn"><%= user.displayName %></a>
@@ -34,7 +34,7 @@
             </a>
         </div>
         <div class="d-none" id="nav-menu">
-            <a href="/play" class="nav-btn">Chơi</a>
+            <a href="/chooselevel" class="nav-btn">Chơi</a>
             <a href="/rank" class="nav-btn">Bảng xếp hạng</a>
             <% if (typeof user !== 'undefined' && user != null) { %>
               <a href="/myaccount" class="nav-btn"><%= user.displayName %></a>

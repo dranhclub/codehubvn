@@ -144,7 +144,7 @@
         var user = userCredential.user;
 
         if (userCredential.additionalUserInfo?.isNewUser) {
-          setIdForUser(user);
+          initUser(user);
         }
 
         user.getIdToken().then(idToken => {

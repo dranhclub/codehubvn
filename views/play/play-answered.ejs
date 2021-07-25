@@ -43,14 +43,9 @@
                     <% }); %>
                 </div>
 
-                
-
-                <h1 class="text-center">Trả lời</h1>
+                <h1 class="text-center">Bạn đã trả lời đúng câu hỏi này</h1>
                 <div class="form-group">
-                    <textarea id="answer" class="form-control" rows="3" placeholder="Nhập câu trả lời của bạn"></textarea>
-                </div>
-                <div class="text-center">
-                    <a href="javascript:void(0);" class="fantasy-btn" onclick="sendAnswer()">Xác nhận</a>
+                    <textarea id="answer" class="form-control" rows="3" placeholder="Nhập câu trả lời của bạn" disabled><%= question.answer %></textarea>
                 </div>
 
             </div>
@@ -59,33 +54,7 @@
 <%- include('../part/foot') %>
 
 <script>
-    function sendAnswer() {
-        var userAnswer = document.getElementById("answer").value;
 
-        if (userAnswer === "") {
-            alert("Vui lòng nhập câu trả lời");
-            return;
-        }
-
-        fetch('/answer', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                "CSRF-Token": Cookies.get("XSRF-TOKEN"),
-            },
-            body: JSON.stringify({
-                questionId: `<%= questionId %>`,
-                userAnswer
-            })
-        }).then(resp => resp.json())
-        .then(data => {
-            if (data.code === "CORRECT") {
-                window.location.reload();
-            } else if (data.code === "WRONG") {
-                alert("Câu trả lời không đúng");
-            }
-        });
-    }
 </script>
 
 </html>

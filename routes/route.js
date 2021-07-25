@@ -4,6 +4,7 @@ var router = express.Router();
 var admin = require('firebase-admin');
 var firebase = require("firebase/app");
 var jwt = require('jsonwebtoken');
+const { user } = require('../config/auth.config');
 // const { pass, user } = require('../config/auth.config');
 var nodemailer = require('../config/nodemailer.config')
 
@@ -153,31 +154,149 @@ router.post('/change-password', (req, res) => {
     });
 });
 
+/********************** */
+/*      Play            */
+
 router.get('/instruction', function (req, res, next) {
   res.render('play/instruction', { title: 'Hướng dẫn luật chơi', user: req.user });
 });
 
 router.get('/chooselevel', function (req, res, next) {
-  res.render('play/chooselevel', { title: 'Chọn cấp độ', user: req.user });
-});
-
-router.get('/play', (req, res) => {
-  res.redirect('/play/1');
-});
-
-router.get('/play/:id', async function (req, res, next) {
   if (req.user) {
-    const questionDocRef = db.collection("questions").doc(`question_${req.params.id}`);
-    let question = await questionDocRef.get();
-    if (question.exists) {
-      res.render('play/play', { title: 'Chơi!', user: req.user, question: question.data() });
+    res.render('play/chooselevel', { title: 'Chọn cấp độ', user: req.user });
+  } else {
+    res.redirect('/login');
+  }
+});
+
+router.get('/play/:level/:id', async (req, res) => {
+  if (req.user) {
+    const level = req.params.level;
+    const id = req.params.id;
+
+    if (level !== 'normal' && level !== 'hard') {
+      res.status(404).end();
+      return;
+    }
+
+    if (isNaN(id) || id < 0) {
+      res.status(404).end();
+      return;
+    }
+  
+    const userRef = db.collection("users").doc(req.user.email);
+    const userDoc = await userRef.get();
+    const userData = userDoc.data();
+    const current = userData.current[level];
+
+    const questionsMetaRef = db.collection("metadata").doc("questions");
+    const questionsMetaDoc = await questionsMetaRef.get();
+    const questionMeta = questionsMetaDoc.data();
+    const questionOrder = questionMeta.questionOrder[level];
+
+    if (id > current + 1) {
+      res.status(404).end();
+    } else if (id > current) {
+      res.send(`Bạn phải trả lời câu hỏi ${current + 1} trước khi xem được câu tiếp theo`);
+    } else if (id < current) {
+      const questionId = questionOrder[id];
+      const question = (await db.collection("questions").doc(questionId).get()).data();
+      res.render('play/play-answered', { 
+        title: `Câu hỏi ${id + 1} cấp độ ${level === 'normal' ? 'thường' : 'khó'}`, 
+        questionOrder: id,
+        questionOrderLength: questionOrder.length,
+        user: req.user, 
+        question, 
+        questionId
+      });
     } else {
-      res.send("Question id not exist");
+      if (current >= questionOrder.length) {
+        res.send("Bạn đã trả lời hết câu hỏi");
+      } else {
+        const questionId = questionOrder[id];
+        const question = (await db.collection("questions").doc(questionId).get()).data();
+        
+        res.render('play/play', { 
+          title: `Câu hỏi ${current + 1} cấp độ ${level === 'normal' ? 'thường' : 'khó'}`, 
+          questionOrder: id, 
+          questionOrderLength: questionOrder.length,
+          user: req.user, 
+          question, 
+          questionId
+        });
+      }
     }
   } else {
     res.redirect('/login');
   }
 });
+
+/****************/
+/******Answer***** */
+router.post('/answer', async (req, res) => {
+  if (!req.user) {
+    res.status(400).end();
+  }
+
+  const {questionId, userAnswer} = req.body;
+
+  const questionRef = db.collection("questions").doc(questionId);
+  const questionDoc = await questionRef.get();
+  if (!questionDoc.exists) {
+    res.send({
+      code: 'INVALID_QUESTION_ID',
+      message: 'invalid question id'
+    });
+  } else {
+    // TODO: Need other validate
+    if (questionDoc.data().answer === userAnswer) {
+      
+      // Save answer time
+      const level = questionDoc.data().level;
+      const userRef = db.collection("users").doc(req.user.email);
+      const answerObj = (await userRef.get()).data().answer;
+      answerObj[level].push(Date.now());
+
+      userRef.update({
+        answer: answerObj
+      }).then(()=>{
+        console.log(`${req.user.email} answer ${questionId} correctly`);
+      });
+      
+      // Update current question of user
+      const current = (await userRef.get()).data().current[level];
+      
+      key = "current." + level;
+      userRef.update({
+        [key]: current + 1
+      });
+      
+      res.send({
+        code: 'CORRECT',
+        message: 'Câu trả lời đúng'
+      });
+    } else {
+      res.send({
+        code: 'WRONG',
+        message: 'Câu trả lời sai'
+      });
+    }
+  }
+});
+
+// router.get('/play/:id', async function (req, res, next) {
+//   if (req.user) {
+//     const questionDocRef = db.collection("questions").doc(`question_${req.params.id}`);
+//     let question = await questionDocRef.get();
+//     if (question.exists) {
+//       res.render('play/play', { title: 'Chơi!', user: req.user, question: question.data() });
+//     } else {
+//       res.send("Question id not exist");
+//     }
+//   } else {
+//     res.redirect('/login');
+//   }
+// });
 
 router.get('/rank', function (req, res, next) {
   res.render('other/rank', { title: 'Bảng xếp hạng', user: req.user });
