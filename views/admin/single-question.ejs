@@ -20,8 +20,8 @@
                     <div class="mb-3">
                         <label for="level" class="form-label">Độ khó</label>
                         <select class="form-select" id="level">
-                            <option value="1" <%= question.level === "normal" ? "selected" : "" %>>Thường</option>
-                            <option value="2" <%= question.level === "hard" ? "selected" : "" %>>Khó</option>
+                            <option value="normal" <%= question.level === "normal" ? "selected" : "" %>>Thường</option>
+                            <option value="hard" <%= question.level === "hard" ? "selected" : "" %>>Khó</option>
                         </select>
                     </div>
                     <div class="mb-3">

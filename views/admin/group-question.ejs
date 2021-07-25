@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('./head') %>
+
+<body>
+    <%- include('./nav') %>
+    
+    <div class="container">
+        <h1>Quản lý bộ câu hỏi</h1>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <h2>Thường</h2>
+                <div class="input-group">
+                    <input id="normal-order" type="text" class="form-control" placeholder="Nhập thứ tự">
+                    <div class="input-group-append">
+                        <a href="javascript:void(0);" class="btn btn-primary" onclick="normalOK()">OK</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <strong>Thứ tự đã chọn</strong>
+                        <ul>
+                            <% questionOrder.normal.forEach(questionId => { %>
+                                <li>
+                                    <a href="/admin/manage-question/<%= questionId %>"><%= questionId %></a>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    </div> 
+                    <div class="col">
+                        <strong>Câu hỏi khả dụng</strong>
+                        <ul>
+                            <% questions.forEach(question => { %>
+                                <% if (question.level === 'normal') { %>
+                                    <li id='li-<%=question.id%>'>
+                                        <a href="/admin/manage-question/<%= question.id %>"><%= question.id %></a>
+                                    </li>
+                                <% } %>
+                            <% }); %>
+                        </ul>
+                    </div>                 
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <h2>Khó</h2>
+                <div class="input-group">
+                    <input id="hard-order" type="text" class="form-control" placeholder="Nhập thứ tự">
+                    <div class="input-group-append">
+                        <a href="javascript:void(0);" class="btn btn-primary" onclick="hardOK()">OK</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <strong>Thứ tự đã chọn</strong>
+                        <ul>
+                            <% questionOrder.hard.forEach(questionId => { %>
+                                <li>
+                                    <a href="/admin/manage-question/<%= questionId %>"><%= questionId %></a>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    </div> 
+                    <div class="col">
+                        <strong>Câu hỏi khả dụng</strong>
+                        <ul>
+                            <% questions.forEach(question => { %>
+                                <% if (question.level === 'hard') { %>
+                                    <li id='li-<%=question.id%>'>
+                                        <a href="/admin/manage-question/<%= question.id %>"><%= question.id %></a>
+                                    </li>
+                                <% } %>
+                            <% }); %>
+                        </ul>
+                    </div>                 
+                </div>
+            </div>
+        </div>
+
+        <hr>
+        <p>Ví dụ nhập thứ tự</p>
+        <p>1,2,3,4</p>
+        <p>Tương ứng với:</p>
+        <p>question_1, question_2, question_3, question_4</p>
+
+    </div>
+</body>
+
+<%- include('./foot') %>
+
+<script>
+    const questions = JSON.parse(`<%-JSON.stringify(questions)%>`);
+    const normalQuestion = questions.filter(q=>q.level === 'normal');
+    const hardQuestion = questions.filter(q=>q.level === 'hard');
+
+    function normalOK() {
+        var orders = document.getElementById("normal-order").value.split(',');
+        var questionIds = [];
+        
+        for (let i = 0; i < orders.length; i++) {
+            let num = parseInt(orders[i]);
+            if (isNaN(num)) {
+                alert('Giá trị không hợp lệ. Vui lòng xem ví dụ');
+                return;
+            }
+            var questionId = `question_${num}`;
+            if (normalQuestion.filter(q => q.id === questionId).length == 0) {
+                alert(`${questionId} không khả dụng`);
+                return;
+            }
+            questionIds.push(questionId);
+
+        }
+
+        db.collection("metadata").doc("questionOrder").update({
+            normal: questionIds
+        }).then(() => {
+            alert("Đã cập nhật");
+            window.location.reload();
+        });
+    }
+
+    function hardOK() {
+        var orders = document.getElementById("hard-order").value.split(',');
+        var questionIds = [];
+        
+        for (let i = 0; i < orders.length; i++) {
+            let num = parseInt(orders[i]);
+            if (isNaN(num)) {
+                alert('Giá trị không hợp lệ. Vui lòng xem ví dụ');
+                return;
+            }
+            var questionId = `question_${num}`;
+            if (hardQuestion.filter(q => q.id === questionId).length == 0) {
+                alert(`${questionId} không khả dụng`);
+                return;
+            }
+            questionIds.push(questionId);
+
+        }
+
+        db.collection("metadata").doc("questionOrder").update({
+            hard: questionIds
+        }).then(() => {
+            alert("Đã cập nhật");
+            window.location.reload();
+        });
+    }
+</script>
+
+</html>

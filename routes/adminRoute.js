@@ -96,6 +96,22 @@ router.get('/manage-question/:question_id', async (req, res) => {
   res.render('admin/single-question.ejs', {title: questionId, questionId, question});
 });
 
+router.get('/group-question',async (req, res) => {
+  const questionOrderRef = db.collection("metadata").doc("questionOrder");
+  const questionOrderDoc = await questionOrderRef.get();
+  const questionOrder = questionOrderDoc.data();
+
+  const questionCollectionRef = db.collection("questions");
+  const questionsQuerysnapshot = await questionCollectionRef.get();
+  const questions = [];
+  questionsQuerysnapshot.forEach(doc => {
+    let question = doc.data();
+    question.id = doc.id;
+    questions.push(question);
+  })
+  res.render('admin/group-question', {title: 'Quản lý bộ câu hỏi', questions, questionOrder});
+});
+
 /******************** */
 /*      Users         */
 router.get('/manage-user', async (req, res) => {
