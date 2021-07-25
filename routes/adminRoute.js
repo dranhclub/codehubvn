@@ -87,6 +87,15 @@ router.get('/add-question', (req, res) => {
   res.render('admin/add-question', {title: 'Thêm câu hỏi'});
 });
 
+router.get('/manage-question/:question_id', async (req, res) => {
+  const questionId = req.params.question_id;
+  const questionRef = db.collection("questions").doc(questionId);
+  const questionDoc = await questionRef.get();
+  const question = questionDoc.data();
+
+  res.render('admin/single-question.ejs', {title: questionId, questionId, question});
+});
+
 /******************** */
 /*      Users         */
 router.get('/manage-user', async (req, res) => {

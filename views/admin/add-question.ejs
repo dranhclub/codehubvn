@@ -20,8 +20,8 @@
                     <div class="mb-3">
                         <label for="level" class="form-label">Độ khó</label>
                         <select class="form-select" id="level">
-                            <option value="1" selected>Thường</option>
-                            <option value="2">Khó</option>
+                            <option value="normal" selected>Thường</option>
+                            <option value="hard">Khó</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -70,7 +70,6 @@
                     </div>
 
                     <p id="text-preview">
-                        Amet culpa ut pariatur sit nostrud id excepteur laborum in veniam excepteur aliquip. Ea adipisicing nostrud minim proident. Enim exercitation ut ullamco nostrud incididunt. Eiusmod cupidatat incididunt mollit sunt et veniam. Nostrud ut officia anim nostrud nostrud. Tempor sit labore ea et sunt ipsum veniam enim. Id velit id culpa reprehenderit ex enim nulla magna laboris consequat Lorem labore.
                     </p>
 
                     <div id="image-preview" class="text-center">
@@ -196,16 +195,18 @@
 
     async function addQuestion() {
         // Get fields
+        var level = document.getElementById("level").value;
         var text = document.getElementById("text").value;
         var images = [];
-        document.getElementById("image-preview").querySelectorAll("img").forEach(element => {
+        document.getElementById("image-preview").querySelectorAll("img[src]").forEach(element => {
             images.push(element.src);
         });
         var ytVideoIds = [];
-        document.getElementById("video-form").querySelectorAll("input").forEach(element => {
+        document.getElementById("video-form").querySelectorAll("input[disabled]").forEach(element => {
             ytVideoIds.push(element.value);
         });
         var answer = document.getElementById("answer").value;
+        console.log("level", level);
         console.log("Text:", text);
         console.log("Image count:", images.length);
         console.log("Videos: ", ytVideoIds);
@@ -223,17 +224,11 @@
         // Set question id
         const questionId = `question_${newLastId}`;
 
-
-        async function uploadTaskPromise() {
-            return new Promise( (resolve, reject) => {
-
-            });
-        } 
-
         // Upload images
         const uploadTasks = [];
         const imgDownloadURLs = [];
         var doneTaskNum = 0;
+
         for (let i = 0; i < images.length; i++) {
             var imgRef = firebase.storage().ref(`images/questions_${questionId}_${i}`);
 
@@ -263,11 +258,16 @@
             );
         }
 
+        if (images.length == 0) {
+            upQuestionToDB();
+        }
+
         // Add question to database
         function upQuestionToDB() {
             var new_qst = db.collection("questions").doc(`question_${newLastId}`);
 
             new_qst.set({
+                level: level,
                 text: text,
                 images: imgDownloadURLs,
                 ytVideoIds: ytVideoIds,

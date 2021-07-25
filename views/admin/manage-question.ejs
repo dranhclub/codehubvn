@@ -26,7 +26,11 @@
                     </thead>
                     <% questions.forEach(question => { %>
                         <tr>
-                            <td><%= question.id %></td>
+                            <td>
+                                <a href="/admin/manage-question/<%= question.id %>">
+                                    <%= question.id %>
+                                </a>
+                            </td>
                             <td><%= question.data.text %></td>
                             <td>
                                 <% question.data.images.forEach((image=>{ %>

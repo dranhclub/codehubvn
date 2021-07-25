@@ -75,7 +75,7 @@ router.get('/checkemail', function (req, res, next) {
   if (req.user) {
     if (!req.user.emailVerified) {
       var actionCodeSettings = {
-        url: 'http://localhost:3000/myaccount',
+        url: window.location.orgin + '/myaccount',
         handleCodeInApp: true,
       };
       admin.auth()
