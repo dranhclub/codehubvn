@@ -61,7 +61,7 @@
                             <h4>Mức thường</h4>
                             <strong>Số câu hỏi đã trả lời: <%=user.current.normal%> / <%= questionMetadata.questionOrder.normal.length %> </strong>
                             <% if (user.current.normal > 0) { %>
-                            <table class="table">
+                            <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Câu số</th>
@@ -70,7 +70,8 @@
                                 </thead>
                                 <tbody>
                                     <% const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; %>
-                                    <% user.answer.normal.forEach((timestamp, index) => { %>
+                                    <% user.answer.normal.forEach((answerTime, index) => { %>
+                                        <% let timestamp = answerTime.time %>
                                         <tr>
                                             <td><%= index + 1 %></td>
                                             <td><%= new Date(timestamp).toLocaleTimeString('vi-VI', options) %></td>
@@ -85,7 +86,7 @@
                             <h4>Mức khó</h4>
                             <strong>Số câu hỏi đã trả lời: <%=user.current.hard%> / <%= questionMetadata.questionOrder.hard.length %> </strong>
                             <% if (user.current.hard > 0) { %>
-                            <table class="table">
+                            <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Câu số</th>
@@ -94,7 +95,8 @@
                                 </thead>
                                 <tbody>
                                     <% const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; %>
-                                    <% user.answer.hard.forEach((timestamp, index) => { %>
+                                    <% user.answer.hard.forEach((answerTime, index) => { %>
+                                        <% let timestamp = answerTime.time %>
                                         <tr>
                                             <td><%= index + 1 %></td>
                                             <td><%= new Date(timestamp).toLocaleTimeString('vi-VI', options) %></td>

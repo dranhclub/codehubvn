@@ -61,8 +61,12 @@ crossorigin="anonymous"></script>
           answer: {
             normal: [],
             hard: []
+          },
+          paid: {
+            normal: false,
+            hard: false
           }
-        }).then(() => console.log("Set id ", newId, " for user"));
+        }).then(() => console.log("Init user ", newId));
       });
     }
 </script>

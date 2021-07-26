@@ -52,8 +52,6 @@ app.all("*", (req, res, next) => {
 });
 
 app.all("*", async (req, res, next) => {
-  console.log("path:", req.path);
-
   if (req.path.startsWith("/admin")) {
     const sessionCookie = req.cookies.adminSession || "";
     if (sessionCookie !== "") {

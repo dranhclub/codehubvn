@@ -16,6 +16,11 @@
                     <% } else { %> 
                     <div></div>
                     <% } %>
+
+                    <div class="text-center flex-grow-1">
+                        <h2>Câu hỏi <%= questionOrder + 1 %> / <%= questionOrderLength %> </h2>
+                    </div>
+
                     <% if (parseInt(questionOrder) + 1 < questionOrderLength) { %>
                         <h1 class="text-center"><%=question.title%></h1>
                         <a class="left" href="./<%=parseInt(questionOrder) + 1%>" role="button">

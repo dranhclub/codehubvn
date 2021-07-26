@@ -16,6 +16,11 @@
                     <% } else { %> 
                     <div></div>
                     <% } %>
+
+                    <div class="text-center flex-grow-1">
+                        <h2>Câu hỏi <%= questionOrder + 1 %> / <%= questionOrderLength %> </h2>
+                    </div>
+
                     <% if (parseInt(questionOrder) + 1 < questionOrderLength) { %>
                         <h1 class="text-center"><%=question.title%></h1>
                         <a class="left" href="./<%=parseInt(questionOrder) + 1%>" role="button">
@@ -43,21 +48,28 @@
                     <% }); %>
                 </div>
 
-                
+                <% if (isAnswered) { %> 
+                    <h1 class="text-center">Bạn đã trả lời đúng câu hỏi này</h1>
+                    <div class="form-group">
+                        <textarea id="answer" class="form-control" rows="3" placeholder="Nhập câu trả lời của bạn" disabled><%= question.answer %></textarea>
+                    </div>
+                <% } else { %>
+                    <h1 class="text-center">Trả lời</h1>
+                    <div class="form-group">
+                        <textarea id="answer" class="form-control" rows="3" placeholder="Nhập câu trả lời của bạn"></textarea>
+                    </div>
+                    <div class="text-center">
+                        <a href="javascript:void(0);" class="fantasy-btn" onclick="sendAnswer()">Xác nhận</a>
+                    </div>
+                <% } %>
 
-                <h1 class="text-center">Trả lời</h1>
-                <div class="form-group">
-                    <textarea id="answer" class="form-control" rows="3" placeholder="Nhập câu trả lời của bạn"></textarea>
-                </div>
-                <div class="text-center">
-                    <a href="javascript:void(0);" class="fantasy-btn" onclick="sendAnswer()">Xác nhận</a>
-                </div>
 
             </div>
     </body>
 
 <%- include('../part/foot') %>
 
+<% if (!isAnswered) { %> 
 <script>
     function sendAnswer() {
         var userAnswer = document.getElementById("answer").value;
@@ -87,5 +99,6 @@
         });
     }
 </script>
+<% }  %>
 
 </html>

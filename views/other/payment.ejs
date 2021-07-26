@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+
+    <%- include('../part/head') %>
+    
+    <%  let paid = {normal: true, hard: false} %>
+
+    <body>
+        <%- include('../part/nav') %>
+            <div id="background"></div>
+            <div class="container">
+                <h1>Thanh toán</h1>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="text-center">
+                            <h2>Thường</h2>
+                            <% if (paid.normal) { %>
+                            <div>
+                                Bạn đã thanh toán cho phần này
+                            </div>
+                            <% } else { %>
+                                <a href="javascript:void(0);" class="fantasy-btn">Thanh toán</a>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="text-center">
+                            <h2>Khó</h2>
+                            <% if (paid.hard) { %>
+                            <div>
+                                Bạn đã thanh toán cho phần này
+                            </div>
+                            <% } else { %>
+                                <a href="javascript:void(0);" class="fantasy-btn">Thanh toán</a>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </body>
+
+<%- include('../part/foot') %>
+
+</html>

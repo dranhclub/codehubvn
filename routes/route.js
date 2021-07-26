@@ -11,17 +11,16 @@ var compareStr = require('../helper/compareStr');
 
 const db = admin.firestore();
 
+/**************** */
+/*     Home page  */
+
 router.get('/', async function (req, res, next) {
   const playRule = (await db.collection("metadata").doc("others").get()).data().playRule;
-  res.render('other/index', { title: 'Codehubvn', user: req.user, playRule });
-});
-
-router.get('/project', function (req, res, next) {
-  res.render('project', { title: 'Project', user: req.user });
-});
-
-router.get('/components', function (req, res, next) {
-  res.render('components', { title: 'Components', user: req.user });
+  res.render('other/index', { 
+    title: 'Codehubvn - Trang chủ', 
+    user: req.user, 
+    playRule 
+  });
 });
 
 /**************** */
@@ -53,7 +52,9 @@ router.post('/login', (req, res, next) => {
 });
 
 router.get('/register', (req, res) => {
-  res.render('account/register', {title: "Đăng ký"});
+  res.render('account/register', {
+    title: "Tạo tài khoản"
+  });
 });
 
 router.get('/login', function (req, res, next) {
@@ -77,7 +78,7 @@ router.get('/checkemail', function (req, res, next) {
   if (req.user) {
     if (!req.user.emailVerified) {
       var actionCodeSettings = {
-        url: window.location.orgin + '/myaccount',
+        url: `http://${req.get('host')}/myaccount`,
         handleCodeInApp: true,
       };
       admin.auth()
@@ -110,7 +111,7 @@ router.get('/forgot', (req, res) => {
 });
 
 /**************** */
-/* My account  */
+/*   My account  */
 
 router.get('/myaccount', async function (req, res, next) {
   if (req.user) {
@@ -167,61 +168,94 @@ router.post('/change-password', (req, res) => {
 /********************** */
 /*      Play            */
 
-router.get('/instruction', function (req, res, next) {
-  res.render('play/instruction', { title: 'Hướng dẫn luật chơi', user: req.user });
-});
-
-router.get('/chooselevel', function (req, res, next) {
+router.get('/chooselevel', async function (req, res, next) {
   if (req.user) {
-    res.render('play/chooselevel', { title: 'Chọn cấp độ', user: req.user });
+    const userRef = db.collection("users").doc(req.user.email);
+    const current = (await userRef.get()).data().current;
+    
+    res.render('play/chooselevel', { 
+      title: 'Chọn cấp độ', 
+      user: req.user,
+      current: current
+    });
   } else {
     res.redirect('/login');
   }
 });
 
 router.get('/play/:level/:id', async (req, res) => {
-  if (req.user) {
-    const level = req.params.level;
-    const id = req.params.id;
-
-    if (level !== 'normal' && level !== 'hard') {
-      res.status(404).end();
-      return;
-    }
-
-    if (isNaN(id) || id < 0) {
-      res.status(404).end();
-      return;
-    }
+  if (!req.user) { 
+    res.redirect('/login');
+    return;
+  }
   
-    const userRef = db.collection("users").doc(req.user.email);
-    const userDoc = await userRef.get();
-    const userData = userDoc.data();
-    const current = userData.current[level];
+  const level = req.params.level;
+  const id = parseInt(req.params.id);
 
-    const questionsMetaRef = db.collection("metadata").doc("questions");
-    const questionsMetaDoc = await questionsMetaRef.get();
-    const questionMeta = questionsMetaDoc.data();
-    const questionOrder = questionMeta.questionOrder[level];
+  // Validate param
+  if (level !== 'normal' && level !== 'hard') {
+    res.status(404).end();
+    return;
+  }
 
-    if (id > current + 1) {
-      res.status(404).end();
-    } else if (id > current) {
-      res.send(`Bạn phải trả lời câu hỏi ${current + 1} trước khi xem được câu tiếp theo`);
-    } else if (id < current) {
-      const questionId = questionOrder[id];
-      const question = (await db.collection("questions").doc(questionId).get()).data();
-      res.render('play/play-answered', { 
-        title: `Câu hỏi ${id + 1} cấp độ ${level === 'normal' ? 'thường' : 'khó'}`, 
-        questionOrder: id,
-        questionOrderLength: questionOrder.length,
-        user: req.user, 
-        question, 
-        questionId
-      });
+  // Validate param
+  if (isNaN(id) || id < 0) {
+    res.status(404).end();
+    return;
+  }
+
+  // Check email verification
+  if (!req.user.emailVerified) {
+    res.render('account/request-verify-email.ejs', {
+      title: 'Xác thực email',
+      user: req.user
+    });
+    return;
+  }
+  
+  // Get current question
+  const userRef = db.collection("users").doc(req.user.email);
+  const userDoc = await userRef.get();
+  const userData = userDoc.data();
+  const current = userData.current[level];
+
+  // Get questions order
+  const questionsMetaRef = db.collection("metadata").doc("questions");
+  const questionsMetaDoc = await questionsMetaRef.get();
+  const questionMeta = questionsMetaDoc.data();
+  const questionOrder = questionMeta.questionOrder[level];
+
+  // Is user paid?
+  const isPaid = userData.paid[level];
+
+  if (id > current + 1) {
+    res.status(404).end();
+  } else if (id > current) {
+    res.send(`Bạn phải trả lời câu hỏi ${current + 1} trước khi xem được câu tiếp theo`);
+  } else if (id < current) {
+    const questionId = questionOrder[id];
+    const question = (await db.collection("questions").doc(questionId).get()).data();
+    res.render('play/play', { 
+      title: `Câu hỏi ${id + 1} cấp độ ${level === 'normal' ? 'thường' : 'khó'}`, 
+      questionOrder: id,
+      questionOrderLength: questionOrder.length,
+      user: req.user, 
+      question, 
+      questionId,
+      isAnswered: true
+    });
+  } else { // id == current
+    if (id >= questionOrder.length) {
+      res.send("Bạn đã trả lời hết câu hỏi");
     } else {
-      if (current >= questionOrder.length) {
-        res.send("Bạn đã trả lời hết câu hỏi");
+      const payQuestion = (await db.collection("metadata").doc("questions").get()).data().payQuestion[level];
+      if (!isPaid && id >= payQuestion - 1) {
+        res.render('play/request-payment', {
+          title: `Câu hỏi ${id + 1} cấp độ ${level === 'normal' ? 'thường' : 'khó'}`, 
+          user: req.user,
+          questionOrder: id,
+          questionOrderLength: questionOrder.length
+        });
       } else {
         const questionId = questionOrder[id];
         const question = (await db.collection("questions").doc(questionId).get()).data();
@@ -232,12 +266,11 @@ router.get('/play/:level/:id', async (req, res) => {
           questionOrderLength: questionOrder.length,
           user: req.user, 
           question, 
-          questionId
+          questionId,
+          isAnswered: false
         });
       }
     }
-  } else {
-    res.redirect('/login');
   }
 });
 
@@ -257,43 +290,71 @@ router.post('/answer', async (req, res) => {
       code: 'INVALID_QUESTION_ID',
       message: 'invalid question id'
     });
-  } else {
-    // TODO: Need other validate
-    if (compareStr(questionDoc.data().answer, userAnswer)) {
-      
-      // Save answer time
-      const level = questionDoc.data().level;
-      const userRef = db.collection("users").doc(req.user.email);
-      const answerObj = (await userRef.get()).data().answer;
-      answerObj[level].push(Date.now());
+    return;
+  } 
 
-      userRef.update({
-        answer: answerObj
-      }).then(()=>{
-        console.log(`${req.user.email} answer ${questionId} correctly`);
-      });
-      
-      // Update current question of user
-      const current = (await userRef.get()).data().current[level];
-      
-      key = "current." + level;
-      userRef.update({
-        [key]: current + 1
-      });
-      
-      res.send({
-        code: 'CORRECT',
-        message: 'Câu trả lời đúng'
-      });
-    } else {
-      res.send({
-        code: 'WRONG',
-        message: 'Câu trả lời sai'
-      });
-    }
+  const questionData = questionDoc.data();
+
+  const userRef = db.collection("users").doc(req.user.email);
+  const userData = (await userRef.get()).data();
+  
+  const level = questionData.level;
+  const current = userData.current[level];
+  const currentQuestionId = (await db.collection("metadata").doc("questions").get()).data().questionOrder[level][current];
+
+  if (questionId !== currentQuestionId) {
+    res.send({
+      code: 'INVALID_QUESTION_ID',
+      message: 'Cannot answer this question right now'
+    });
+    return;
+  }
+
+  if (compareStr.compare(questionData.answer, userAnswer)) {
+    
+    // Save answer time
+    const answerObj = userData.answer;
+    answerObj[level].push({
+      questionId: questionId,
+      time: Date.now()
+    });
+    userRef.update({
+      answer: answerObj
+    }).then(()=>{
+      console.log(`${req.user.email} answer ${questionId} correctly`);
+    });
+    
+    // Update current question of user
+    var key = "current." + level;
+    userRef.update({
+      [key]: current + 1
+    });
+    
+    res.send({
+      code: 'CORRECT',
+      message: 'Câu trả lời đúng'
+    });
+  } else {
+    res.send({
+      code: 'WRONG',
+      message: 'Câu trả lời sai'
+    });
   }
 });
 
+/*******************/
+/*    Payment     */
+router.get('/payment', (req, res) => {
+  if (!req.user) {
+    res.send(404);
+    return;
+  }
+  
+  res.render('other/payment', {
+    title: 'Thanh toán',
+    user: req.user
+  });
+});
 
 router.get('/rank', function (req, res, next) {
   res.render('other/rank', { title: 'Bảng xếp hạng', user: req.user });
