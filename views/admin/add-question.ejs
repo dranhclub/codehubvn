@@ -217,7 +217,7 @@
         var questionMetadataDoc = await questionsMetadataRef.get();
         var questionMetadata = questionMetadataDoc.data();
         const newLastId = questionMetadata.lastId + 1;
-        questionsMetadataRef.set({
+        questionsMetadataRef.update({
             lastId: newLastId
         });
 

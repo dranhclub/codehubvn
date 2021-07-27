@@ -118,10 +118,18 @@
 
 <%- include('./foot') %>
 
+<% 
+const questions2 = questions.map(q => {
+    return {id: q.id, level: q.level}
+});
+const normalQuestion = questions2.filter(q=>q.level === 'normal');
+const hardQuestion = questions2.filter(q=>q.level === 'hard');
+%>
+
+
 <script>
-    const questions = JSON.parse(`<%-JSON.stringify(questions)%>`);
-    const normalQuestion = questions.filter(q=>q.level === 'normal');
-    const hardQuestion = questions.filter(q=>q.level === 'hard');
+    const normalQuestion = JSON.parse(`<%-JSON.stringify(normalQuestion)%>`);
+    const hardQuestion = JSON.parse(`<%-JSON.stringify(hardQuestion)%>`);
 
     function normalOK() {
         var orders = document.getElementById("normal-order").value.split(',');

@@ -34,7 +34,9 @@
                                     <%= question.id %>
                                 </a>
                             </td>
-                            <td><%= question.data.text %></td>
+                            <td>
+                                <%- question.data.text.split('\n').join("</p><p>") %>
+                            </td>
                             <td>
                                 <% question.data.images.forEach((image=>{ %>
                                     <img src="<%= image %>" alt="" style="max-width: 200px;" class="img-thumbnail">
