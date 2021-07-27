@@ -224,54 +224,48 @@ router.get('/play/:level/:id', async (req, res) => {
   const questionsMetaDoc = await questionsMetaRef.get();
   const questionMeta = questionsMetaDoc.data();
   const questionOrder = questionMeta.questionOrder[level];
+  const numQuestion = questionOrder.length;
+
+  // Id must < numQuestion
+  if (id >= numQuestion) {
+    res.status(404).end();
+    return;
+  }
 
   // Is user paid?
   const isPaid = userData.paid[level];
+  const payQuestionIdx = (await db.collection("metadata").doc("questions").get()).data().payQuestion[level];
 
-  if (id > current + 1) {
-    res.status(404).end();
-  } else if (id > current) {
-    res.send(`Bạn phải trả lời câu hỏi ${current + 1} trước khi xem được câu tiếp theo`);
+  // Get question
+  const questionId = questionOrder[id];
+  const question = (await db.collection("questions").doc(questionId).get()).data();
+
+  // Define send object
+  sendObj = {
+    title: `Câu hỏi ${id + 1} cấp độ ${level === 'normal' ? 'thường' : 'khó'}`,
+    // type: 'show-answer' or 'show-question' or 'request-payment' or 'notification'
+    message: '',
+    id,
+    user: req.user,
+    numQuestion,
+    question,
+    questionId,
+  }
+
+  if (id > current) {
+    sendObj.type = 'notification';
+    sendObj.message = `Bạn phải trả lời câu hỏi ${current + 1} trước khi xem được các câu hỏi tiếp theo`;
   } else if (id < current) {
-    const questionId = questionOrder[id];
-    const question = (await db.collection("questions").doc(questionId).get()).data();
-    res.render('play/play', { 
-      title: `Câu hỏi ${id + 1} cấp độ ${level === 'normal' ? 'thường' : 'khó'}`, 
-      questionOrder: id,
-      questionOrderLength: questionOrder.length,
-      user: req.user, 
-      question, 
-      questionId,
-      isAnswered: true
-    });
-  } else { // id == current
-    if (id >= questionOrder.length) {
-      res.send("Bạn đã trả lời hết câu hỏi");
+    sendObj.type = 'show-answer';
+  } else { // id == curent
+    if (id == payQuestionIdx - 1 && !isPaid) {
+      sendObj.type = 'request-payment';
     } else {
-      const payQuestion = (await db.collection("metadata").doc("questions").get()).data().payQuestion[level];
-      if (!isPaid && id >= payQuestion - 1) {
-        res.render('play/request-payment', {
-          title: `Câu hỏi ${id + 1} cấp độ ${level === 'normal' ? 'thường' : 'khó'}`, 
-          user: req.user,
-          questionOrder: id,
-          questionOrderLength: questionOrder.length
-        });
-      } else {
-        const questionId = questionOrder[id];
-        const question = (await db.collection("questions").doc(questionId).get()).data();
-        
-        res.render('play/play', { 
-          title: `Câu hỏi ${current + 1} cấp độ ${level === 'normal' ? 'thường' : 'khó'}`, 
-          questionOrder: id, 
-          questionOrderLength: questionOrder.length,
-          user: req.user, 
-          question, 
-          questionId,
-          isAnswered: false
-        });
-      }
+      sendObj.type = 'show-question';
     }
   }
+
+  res.render('play/play', sendObj);
 });
 
 /****************/

@@ -13,8 +13,9 @@ a {
 }
 
 .main-container {
-  background-color: rgba(255,255,255,0.75);
-  /* min-height: 600px; */
+  background: url('/images/main-container-bg.webp') no-repeat;
+  background-position: top;
+  background-size: cover;
   margin-top: 20px;
   margin-bottom: 20px;
   border-radius: 10px;
@@ -30,7 +31,7 @@ a {
   bottom: 0;
   right: 0;
   z-index: -1;
-  opacity: 0.2;
+  opacity: 0.5;
   background-attachment: fixed;
   background-image: url('/images/background.jpg');
   background-position: center;
@@ -38,8 +39,7 @@ a {
 }
 
 nav{
-  background-color: #A2744A;
-  /* height: 50px; */
+  background-color: rgba(128, 112, 67, 0.7);
   margin-bottom: 20px;
   box-shadow: 0 5px 7px -5px rgb(0 0 0 / 57%)
 }
@@ -99,7 +99,7 @@ nav.nav-small .icon {
 /*Footer*/
 
 footer{
-  background-color: #A2744A;
+  background-color: rgba(128, 112, 67, 0.7);
 }
 
 
@@ -124,4 +124,27 @@ footer{
   background: url('/images/buttonStock2.png') no-repeat;
   background-position: center center; 
   background-size: 100% 100%;
+}
+
+h1 {
+  text-shadow: 1.5px 1.5px 5px rgba(128, 112, 67, 0.7);
+}
+
+h2 {
+  text-shadow: 1.5px 1.5px 4px rgba(128, 112, 67, 0.7);
+}
+
+tr {
+  border: 1px solid black;
+}
+
+.fa-chevron-left, .fa-chevron-right {
+  color: rgba(0,0,0,0.8);
+  font-size: 40px;
+  text-shadow: 1.5px 1.5px 4px rgba(128, 112, 67, 0.7);
+}
+
+.fa-chevron-disabled {
+  color: rgba(0,0,0,0.25);
+  text-shadow: none;
 }
