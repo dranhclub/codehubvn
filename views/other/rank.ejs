@@ -25,34 +25,19 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <th scope="col">1</th>
-                    <td>1</td>
-                    <td>Nguyen Van A</td>
-                    <td>3/4</td>
-                    <td>17:14:17, Chủ Nhật, 25 tháng 7, 2021</td>
-                  </tr>
-                  <tr>
-                    <th scope="col">1</th>
-                    <td>1</td>
-                    <td>Nguyen Van A</td>
-                    <td>3/4</td>
-                    <td>17:14:17, Chủ Nhật, 25 tháng 7, 2021</td>
-                  </tr>
-                  <tr>
-                    <th scope="col">1</th>
-                    <td>1</td>
-                    <td>Nguyen Van A</td>
-                    <td>3/4</td>
-                    <td>17:14:17, Chủ Nhật, 25 tháng 7, 2021</td>
-                  </tr>
-                  <tr>
-                    <th scope="col">1</th>
-                    <td>1</td>
-                    <td>Nguyen Van A</td>
-                    <td>3/4</td>
-                    <td>17:14:17, Chủ Nhật, 25 tháng 7, 2021</td>
-                  </tr>
+                  <% normalRankings.forEach(user => { %>
+                    <tr>
+                      <th scope="col"><%= user.rank %></th>
+                      <td><%= user.id %></td>
+                      <td><%= user.name %></td>
+                      <td><%= user.current.normal %>/<%=numNormalQuestion%></td>
+                      <% if (user.current.normal > 0) { %>
+                        <td><%= new Date(user.answer.normal[user.answer.normal.length - 1].time).toLocaleString('vi-VI') %></td>
+                        <% } else { %>
+                        <td>-</td>
+                        <% } %>
+                    </tr>
+                  <% }) %>
                 </tbody>
               </table>
             </div>
@@ -71,34 +56,19 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <th scope="col">1</th>
-                    <td>1</td>
-                    <td>Nguyen Van A</td>
-                    <td>3/4</td>
-                    <td>17:14:17, Chủ Nhật, 25 tháng 7, 2021</td>
-                  </tr>
-                  <tr>
-                    <th scope="col">1</th>
-                    <td>1</td>
-                    <td>Nguyen Van A</td>
-                    <td>3/4</td>
-                    <td>17:14:17, Chủ Nhật, 25 tháng 7, 2021</td>
-                  </tr>
-                  <tr>
-                    <th scope="col">1</th>
-                    <td>1</td>
-                    <td>Nguyen Van A</td>
-                    <td>3/4</td>
-                    <td>17:14:17, Chủ Nhật, 25 tháng 7, 2021</td>
-                  </tr>
-                  <tr>
-                    <th scope="col">1</th>
-                    <td>1</td>
-                    <td>Nguyen Van A</td>
-                    <td>3/4</td>
-                    <td>17:14:17, Chủ Nhật, 25 tháng 7, 2021</td>
-                  </tr>
+                  <% hardRankings.forEach(user => { %>
+                    <tr>
+                      <th scope="col"><%= user.rank %></th>
+                      <td><%= user.id %></td>
+                      <td><%= user.name %></td>
+                      <td><%= user.current.hard %>/<%=numHardQuestion%></td>
+                      <% if (user.current.hard > 0) { %>
+                      <td><%= new Date(user.answer.hard[user.answer.hard.length - 1].time).toLocaleString('vi-VI') %></td>
+                      <% } else { %>
+                      <td>-</td>
+                      <% } %>
+                    </tr>
+                  <% }) %>
                 </tbody>
               </table>
             </div>

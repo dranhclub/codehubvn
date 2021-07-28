@@ -57,7 +57,7 @@
             displayName: name,
           }).then(()=>{
             showMessage("Đăng ký thành công");
-
+            initUser(user);
             // POST to server
             user.getIdToken()
               .then((idToken) => {
@@ -80,7 +80,7 @@
             showMessage(error.message);
           });
 
-          initUser(user);
+
 
         })
         .catch(function(error) {

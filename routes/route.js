@@ -350,8 +350,80 @@ router.get('/payment', (req, res) => {
   });
 });
 
-router.get('/rank', function (req, res, next) {
-  res.render('other/rank', { title: 'Bảng xếp hạng', user: req.user });
+/*******************/
+/*    Rankings         */
+
+async function updateRankings() {
+  const normalRankingRef = db.collection("rankings").doc("normal");
+  const hardRankingRef = db.collection("rankings").doc("hard");
+  
+  const userRef = db.collection("users");
+  const querySnapshot = await userRef.get();
+  const users = [];
+  querySnapshot.forEach((doc) => {
+    let user = doc.data();
+    user.email = doc.id;
+    users.push(user);
+  });
+  users.sort((userA, userB) => {
+    let diffirent = userB.current.normal - userA.current.normal;
+    if (diffirent != 0) {
+      return diffirent;
+    }
+    if (userA.current.normal == 0) {
+      return 1;
+    }
+    let tA = userA.answer.normal[userA.current.normal - 1];
+    let tB = userB.answer.normal[userB.current.normal - 1];
+    return tA - tB;
+  });
+
+  await normalRankingRef.set({
+    users: users.map((user, index) => {
+      user.rank = index + 1;
+      return user;
+    })
+  });
+
+  users.sort((userA, userB) => {
+    let diffirent = userB.current.hard - userA.current.hard;
+    if (diffirent != 0) {
+      return diffirent;
+    }
+    if (userA.current.hard == 0) {
+      return 1;
+    }
+    let tA = userA.answer.hard[userA.current.hard - 1];
+    let tB = userB.answer.hard[userB.current.hard - 1];
+    return tA - tB;
+  });
+
+  hardRankingRef.set({
+    users: users.map((user, index) => {
+      user.rank = index + 1;
+      return user;
+    })
+  })
+}
+
+router.get('/rank', async function (req, res, next) {
+  await updateRankings();
+  const normalRankingRef = db.collection("rankings").doc("normal");
+  const hardRankingRef = db.collection("rankings").doc("hard");
+
+  let normalRankingData = (await normalRankingRef.get()).data();
+  let hardRankingData = (await hardRankingRef.get()).data();
+
+  const metaQuestionData = (await db.collection("metadata").doc("questions").get()).data();
+
+  res.render('other/rank', { 
+    title: 'Bảng xếp hạng', 
+    user: req.user,
+    normalRankings: normalRankingData.users,
+    hardRankings: hardRankingData.users,
+    numNormalQuestion: metaQuestionData.questionOrder.normal.length,
+    numHardQuestion: metaQuestionData.questionOrder.hard.length
+  });
 });
 
 module.exports = router;

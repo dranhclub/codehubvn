@@ -20,7 +20,7 @@ module.exports.sendConfirmationEmail = (name, email, link) => {
         subject: "Please confirm your account",
         html: `<h1>Email Confirmation</h1>
           <h2>Hello ${name}</h2>
-          <p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
+          <p>Vui lòng bấm vào link dưới đây để xác thực email</p>
           <a href=${link}> Click here</a>
           </div>`,
     })

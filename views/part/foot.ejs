@@ -11,7 +11,6 @@
   function setMinHeight() {
     let minHeight = window.innerHeight - 135;
     document.getElementsByClassName("main-container")[0].style.minHeight = `${minHeight}px`;
-    console.log('minHeight=', minHeight);
   }
 
   setMinHeight();
@@ -77,6 +76,7 @@ crossorigin="anonymous"></script>
         var userRef = db.collection("users").doc(user.email);
         userRef.set({
           id: newId,
+          name: user.displayName,
           current: {
             normal: 0,
             hard: 0
