@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('./head') %>
+
+<style>
+    #preview *{
+        font-family: 'Roboto Slab';
+    }
+</style>
+
+<body>
+    <%- include('./nav') %>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <h2>Thông tin người dùng</h2>
+                <div class="form-group">
+                    <label for="id" class="form-label">ID</label>
+                    <input type="text" name="" id="id" class="form-control" disabled value="<%=id%>">
+                    <label for="email" class="form-label">Email</label> 
+                    <% if (!userRecord.emailVerified) { %> 
+                        <span>(chưa xác thực)</span>
+                    <% } %>
+                    <input type="email" name="" id="email" class="form-control" disabled value="<%=userRecord.email%>">
+                    <label for="name" class="form-label">Tên hiển thị</label>
+                    <input type="text" name="" id="name" class="form-control" value="<%=userRecord.displayName%>">
+                    <label for="avatar">Ảnh đại diện</label>
+                    <div>
+                        <% if (userRecord.photoURl) { %>
+                            <img src="<%=userRecord.photoURL%>" id="avatar" alt="avt" width="200" height="200" class="img-thumbnail">
+                        <% } else { %>
+                            <img src="/images/df-avt.png" alt="default-avatar" width="200" height="200" class="img-thumbnail">
+                        <% } %>
+                    </div>
+                    <label for="disabled" class="form-label">Vô hiệu hoá</label>
+                    <input type="checkbox" name="" id="disabled">
+                    <h4>Thông tin thêm</h4>
+                    <div id="more-info">
+                        <div>Đăng nhập lần cuối: <%= new Date(Date.parse(userRecord.metadata.lastSignInTime)).toLocaleString('vi-VI') %></div>
+                        <div>Đăng ký: <%= new Date(Date.parse(userRecord.metadata.creationTime)).toLocaleString('vi-VI') %></div>
+                        <div>
+                            Đăng nhập bằng: 
+                            <% userRecord.providerData.forEach(provider => { %> 
+                                <span>
+                                    <%= provider.providerId %> 
+                                </span>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <h2>Lịch sử trả lời</h2>
+                <div>
+                    <h4>Mức thường</h4>
+                    <strong>Số câu hỏi đã trả lời: <%=user.current.normal%> / <%= questionMetadata.questionOrder.normal.length %> </strong>
+                    <% if (user.current.normal > 0) { %>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Câu số</th>
+                                <th>Thời gian trả lời</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% user.answer.normal.forEach((answerTime, index) => { %>
+                                <% let timestamp = answerTime.time %>
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td><%= new Date(timestamp).toLocaleTimeString('vi-VI') %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                    <% } %>
+                </div>
+                <hr>
+                <div>
+                    <h4>Mức khó</h4>
+                    <strong>Số câu hỏi đã trả lời: <%=user.current.hard%> / <%= questionMetadata.questionOrder.hard.length %> </strong>
+                    <% if (user.current.hard > 0) { %>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Câu số</th>
+                                <th>Thời gian trả lời</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% user.answer.hard.forEach((answerTime, index) => { %>
+                                <% let timestamp = answerTime.time %>
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td><%= new Date(timestamp).toLocaleTimeString('vi-VI') %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<%- include('./foot') %> 
+
+<script>
+
+</script>
+
+</html>

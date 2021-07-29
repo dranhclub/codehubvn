@@ -153,6 +153,32 @@ router.get('/manage-user', async (req, res) => {
 });
 
 /******************** */
+/*      Single user   */
+router.get('/manage-user/:id', async (req, res) => {
+  let id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    res.send("id invalid");
+    return;
+  }
+  const querySnapshot = await db.collection("users").where("id", "==", id).get();
+  if (querySnapshot.docs.length == 0) {
+    res.send("khong co user id tuong ung");
+    return;
+  }
+  const email = querySnapshot.docs[0].id;
+  const userRecord = await admin.auth().getUserByEmail(email);
+  const questionMetadata = (await db.collection("metadata").doc("questions").get()).data();
+
+  res.render('admin/single-user', {
+    title: 'Thông tin người dùng' + id,
+    id: id,
+    userRecord: userRecord,
+    user: querySnapshot.docs[0].data(),
+    questionMetadata
+  });
+});
+
+/******************** */
 /*      Play rule     */
 
 router.get("/playrule", async (req, res) => {
