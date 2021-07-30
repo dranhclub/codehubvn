@@ -18,6 +18,15 @@
   window.addEventListener('resize', () => {
     setMinHeight();
   },true);
+
+  function showAlert(message) {
+    document.querySelector(".wrapper").style.display = 'flex'
+    document.querySelector(".my-alert #alert-message").innerHTML = message;
+  }
+  
+  function hideAlert() {
+    document.querySelector(".wrapper").style.display = 'none';
+  }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

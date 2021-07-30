@@ -5,6 +5,7 @@
 
     <body>
         <%- include('../part/nav') %>
+        <%- include('../part/alert') %>
             <div id="background"></div>
             <div class="container main-container">
                 <!-- Nav -->
@@ -66,6 +67,8 @@
                 </div>
                 <% } %>
 
+                <p></p>
+
                 <!-- Answer form -->
                 <% if (type === 'show-answer') { %> 
                     <h1 class="text-center">Bạn đã trả lời đúng câu hỏi này</h1>
@@ -77,6 +80,7 @@
                     <div class="form-group">
                         <textarea id="answer" class="form-control" rows="3" placeholder="Nhập câu trả lời của bạn"></textarea>
                     </div>
+                    <p></p>
                     <div class="text-center">
                         <a href="javascript:void(0);" class="fantasy-btn" onclick="sendAnswer()">Xác nhận</a>
                     </div>
@@ -94,7 +98,7 @@
         var userAnswer = document.getElementById("answer").value;
 
         if (userAnswer === "") {
-            alert("Vui lòng nhập câu trả lời");
+            showAlert("Vui lòng nhập câu trả lời");
             return;
         }
 
@@ -113,7 +117,7 @@
             if (data.code === "CORRECT") {
                 window.location.reload();
             } else if (data.code === "WRONG") {
-                alert("Câu trả lời không đúng");
+                showAlert("Câu trả lời không đúng");
             }
         });
     }

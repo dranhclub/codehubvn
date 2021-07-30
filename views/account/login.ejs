@@ -43,6 +43,7 @@
 
   <body>
     <%- include('../part/nav') %>
+    <%- include('../part/alert') %>
       <div id="background"></div>
       <div class="container main-container">
         <div class="col col-md-6 col-xs-12">
@@ -96,7 +97,7 @@
       let password = document.getElementById("login_password").value;
 
       if (email == "" || password == "" || !validateEmail(email)) {
-        alert("Vui lòng điền thông tin hợp lệ");
+        showAlert("Vui lòng điền thông tin hợp lệ");
         return;
       }
 
@@ -119,15 +120,25 @@
                 if (data.code == "OK") {
                   window.location = '/myaccount';
                 } else {
-                  showMessage(data.message)
+                  showMessage(data.message);
                 }
               })
               .catch(error => {
-                showMessage(error);
+                console.log(error);
               });
           });
         }).catch(error => {
-          showMessage(error)
+          if (error.code === "auth/wrong-password") {
+            showAlert("Sai mật khẩu");
+          } else if (error.code === "auth/user-not-found") {
+            showAlert("Email không khớp với tài khoản nào");
+          } else if (error.code === "auth/user-disabled") {
+            showAlert("Tài khoản đã bị vô hiệu hoá");
+          } else if (error.code === "auth/invalid-email") {
+            showAlert("Email không hợp lệ");
+          } else {
+            console.log(error);
+          }
         });
     }
 

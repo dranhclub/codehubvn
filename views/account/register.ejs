@@ -5,6 +5,8 @@
 
   <body>
     <%- include('../part/nav') %>
+    <%- include('../part/alert') %>
+
       <div id="background"></div>
       <div class="container main-container">
         <div class="col col-md-6 col-xs-12">
@@ -12,11 +14,13 @@
       
           <div class="form-group">
             <label for="name">Tên hiển thị</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Nhập tên hiển thị">
+            <input type="text" class="form-control" id="name" placeholder="Nhập tên hiển thị">
             <label for="email">Email</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+            <input type="email" class="form-control" id="email" placeholder="Email">
             <label for="password">Mật khẩu</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="******">
+            <input type="password" class="form-control" id="password" placeholder="******">
+            <label for="password2">Nhập lại mật khẩu</label>
+            <input type="password" class="form-control" id="password2" placeholder="******">
           </div>
       
           <p></p>
@@ -34,18 +38,60 @@
 
   <script>
     function showMessage(message) {
-      document.getElementById("message").innerText = message;  
+      document.getElementById("message").innerHTML = message;  
     }
 
-    function register() {
+    document.querySelector("#password2").addEventListener("input", function (e) {
+      let p1 = document.querySelector("#password").value;
+      let p2 = document.querySelector("#password2").value;
+      
+      if (p2 === "") {
+        showMessage("");
+        return;
+      }
+
+      if (p1 !== p2) {
+        showMessage("Mật khẩu không khớp");
+      } else {
+        showMessage("");
+      }
+    });
+
+     function register() {
       // Get fields
       let name = document.getElementById('name').value;
       let email = document.getElementById('email').value;
       let password = document.getElementById('password').value;
+      let password2 = document.getElementById('password2').value;
 
       // Validate fields
-      if (name == "" || email == "" || password == "" || !validateEmail(email)) {
-        alert("Vui lòng điền thông tin hợp lệ");
+      if (name === "") {
+        showAlert("Bạn chưa điền tên");
+        return;
+      }
+
+      if (email == "") {
+        showAlert("Bạn chưa điền email");
+        return;
+      }
+
+      if (!validateEmail(email)) {
+        showAlert("Email không đúng định dạng");
+        return;
+      }
+
+      if (password === "") {
+        showAlert("Bạn chưa điền mật khẩu");
+        return;
+      }
+
+      if (password2 === "") {
+        showAlert("Bạn chưa nhập lại mật khẩu");
+        return;
+      }
+
+      if (password !== password2) {
+        showAlert("Mật khẩu không khớp");
         return;
       }
 
@@ -77,21 +123,20 @@
               });
           }), 
           ((error) => {
-            showMessage(error.message);
+            console.log(error);
           });
-
-
-
         })
         .catch(function(error) {
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          if (errorCode == 'auth/weak-password') {
-            showMessage(errorMessage);
-          } else {
-            showMessage(errorMessage);
-          }
-          console.log(error);
+          if (error.code === "auth/email-already-in-use") {
+              showAlert("Email đã được sử dụng");
+            } else if (error.code === "auth/invalid-email") {
+              showAlert("Email không hợp lệ");
+            } else if (error.code === "auth/weak-password") {
+              showAlert("Mật khẩu quá yếu, vui lòng nhập mật khẩu mạnh hơn");
+            } else {
+              console.log(error);
+              showAlert("Lỗi hệ thống");
+            }
         });
 
 
