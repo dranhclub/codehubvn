@@ -3,34 +3,41 @@
 
     <%- include('../part/head') %>
 
+    <style>
+        .banner-img{
+            width: 99%;
+            transition: all 0.2s cubic-bezier(0.075, 0.82, 0.165, 1);
+            border-radius: 5px;
+            box-shadow: 0px 0px 3px black;
+        }
+        
+        .banner-img:hover{
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0px 0px 5px black;
+        }
+
+        .banner-wrapper{
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+
     <body>
         <%- include('../part/nav') %>
             <div id="background"></div>
             <div class="container main-container">
-                <div class="text-center">
-                    <h1>Chào mừng đến với Codehubvn</h1>
+
+                <div class="banner-wrapper" onclick="window.location='/chooselevel'">
+                    <img src="/images/code-games.jpg" alt="code-games" class="banner-img">
                 </div>
-                <hr>
-                <h2>Luật chơi</h2>
-                <div class="form-group">
-                    <p>
-                        <%- playRule.split('\n').join("</p><p>") %>
-                    </p>
-                            
-                    <!-- <textarea name="" id="" cols="30" rows="10" disabled class="form-control"><%=playRule%></textarea> -->
+
+                <p></p>
+
+                <div class="banner-wrapper" onclick="window.location='/recruiment'">
+                    <img src="/images/recruitment.jpg" alt="recruiment" class="banner-img">
                 </div>
-                <a href="/chooselevel" class="fantasy-btn">Chơi ngay</a>
-                <hr>
-                <h2>Tuyển dụng</h2>
-                <div>
-                    <p>
-                        Aute aliqua ad magna ipsum sint occaecat consequat labore mollit cillum aliqua. Ullamco culpa irure ipsum sunt do anim ut excepteur. Commodo culpa voluptate anim ex anim sit ex laborum officia laboris. Esse in aliqua cupidatat id consequat veniam aliqua id dolore. Reprehenderit fugiat irure adipisicing est aliquip proident.
-                    </p>
-                    <p>
-                        Deserunt qui amet velit adipisicing laborum. Voluptate duis minim consectetur proident elit sint enim amet sint. Cupidatat velit aute reprehenderit enim in enim pariatur dolore laboris nisi minim. Tempor magna occaecat officia aute et nisi consectetur officia sit. Laborum laborum sit pariatur qui sit dolor magna nostrud velit labore. Ex ad excepteur deserunt exercitation.
-                    </p>
-                    <p>Cillum et pariatur consectetur dolore sit ipsum duis dolor cupidatat laborum laborum. Dolor nulla pariatur dolore sunt non commodo fugiat non eiusmod ea Lorem qui. Ad dolor eu minim tempor ipsum laborum. Veniam laborum cupidatat est proident ad. Ex magna commodo do cillum ex non consectetur ullamco pariatur laboris voluptate laborum. Reprehenderit non ad culpa nostrud culpa amet.</p>
-                </div>
+                                
             </div>
     </body>
 

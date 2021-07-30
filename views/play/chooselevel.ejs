@@ -8,15 +8,26 @@
             <div id="background"></div>
             <div class="container main-container">
                 <div class="row">
+                    <h1 class="text-center">Luật chơi</h1>
+                    <div class="form-group">
+                        <p>
+                            <%- playRule.split('\n').join("</p><p>") %>
+                        </p>
+                    </div>
+                </div>
+                
+                <hr>
+
+                <div class="row">
                     <h1 class="text-center">Chọn cấp độ</h1>
                 </div>
                 <div class="row">
-                    <div class="col col-6 col-xs-12 text-center">
+                    <div class="col-12 col-md-6 text-center">
                         <h2>Thường</h2>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda temporibus impedit, obcaecati libero reiciendis similique voluptatem deleniti itaque odit voluptate magnam! Corporis, quidem. Deserunt repellendus nesciunt harum iure odio unde.</p>
+                        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis voluptates nulla voluptate fugiat, veniam expedita nihil beatae repudiandae libero consequatur architecto pariatur quaerat a culpa nostrum voluptatibus vel minima ipsa?</p>
                         <a href="/play/normal/<%=current.normal%>" class="fantasy-btn">Chơi</a>
                     </div>
-                    <div class="col col-6 col-xs-12 text-center">
+                    <div class="col-12 col-md-6 text-center">
                         <h2>Khó</h2>
                         <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis voluptates nulla voluptate fugiat, veniam expedita nihil beatae repudiandae libero consequatur architecto pariatur quaerat a culpa nostrum voluptatibus vel minima ipsa?</p>
                         <a href="/play/hard/<%=current.hard%>" class="fantasy-btn">Chơi</a>

@@ -15,11 +15,9 @@ const db = admin.firestore();
 /*     Home page  */
 
 router.get('/', async function (req, res, next) {
-  const playRule = (await db.collection("metadata").doc("others").get()).data().playRule;
   res.render('other/index', { 
     title: 'Codehubvn - Trang chủ', 
     user: req.user, 
-    playRule 
   });
 });
 
@@ -172,11 +170,13 @@ router.get('/chooselevel', async function (req, res, next) {
   if (req.user) {
     const userRef = db.collection("users").doc(req.user.email);
     const current = (await userRef.get()).data().current;
-    
+    const playRule = (await db.collection("metadata").doc("others").get()).data().playRule;
+
     res.render('play/chooselevel', { 
       title: 'Chọn cấp độ', 
       user: req.user,
-      current: current
+      current: current,
+      playRule: playRule
     });
   } else {
     res.redirect('/login');
@@ -423,6 +423,13 @@ router.get('/rank', async function (req, res, next) {
     hardRankings: hardRankingData.users,
     numNormalQuestion: metaQuestionData.questionOrder.normal.length,
     numHardQuestion: metaQuestionData.questionOrder.hard.length
+  });
+});
+
+router.get('/recruiment', (req, res) => {
+  res.render("other/recruitment", {
+    title: 'Tuyển dụng',
+    user: req.user
   });
 });
 
