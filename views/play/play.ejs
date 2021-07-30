@@ -7,7 +7,7 @@
         <%- include('../part/nav') %>
         <%- include('../part/alert') %>
             <div id="background"></div>
-            <div class="container main-container">
+            <div class="container main-container main-container-background">
                 <!-- Nav -->
                 <div class="d-flex flex-row justify-content-center">
                     <div class="d-flex flex-row text-center">
@@ -57,7 +57,7 @@
                 <% if (type === 'show-answer' || type === 'show-question') { %> 
                 <div class="text-center">
                     <% question.images.forEach(image => { %>
-                        <img src="<%= image %>" alt="image" data-action="zoom" class="img-thumbnail">
+                        <img src="<%= image %>" alt="image" class="img-thumbnail question-image">
                     <% }); %>
                 </div>
                 <div class="text-center">
