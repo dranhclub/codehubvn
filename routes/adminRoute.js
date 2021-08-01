@@ -4,7 +4,7 @@ var jwt = require('jsonwebtoken')
 var admin = require('firebase-admin');
 const { user } = require('../config/auth.config');
 const { route } = require('./route');
-
+const { normalize } = require('../helper/compareStr');
 const db = admin.firestore();
 
 
@@ -121,7 +121,6 @@ router.get('/manage-user', async (req, res) => {
     return;
   }
 
-
   admin
   .auth()
   .listUsers(1000)
@@ -143,7 +142,33 @@ router.get('/manage-user', async (req, res) => {
       let userInfo = await db.collection("users").doc(users[i].email).get();
       users[i].id = userInfo.data().id;
     }
-    res.render('admin/manage-user', { title: 'Quản lý người dùng' , users: users});
+
+    if (req.query.id) {
+      users = users.filter(user => user.id == req.query.id);
+    }
+
+    if (req.query.email) {
+      users = users.filter(user => {
+        let str = normalize(user.email);
+        let str2 = normalize(req.query.email);
+        return str.search(str2) >= 0;
+      });
+    }
+
+    if (req.query.name) {
+      users = users.filter(user => {
+        let str = normalize(user.displayName);
+        let str2 = normalize(req.query.name);
+        return str.search(str2) >= 0;
+      });
+    }
+
+
+    res.render('admin/manage-user', { 
+      title: 'Quản lý người dùng' , 
+      users: users,
+      req
+    });
   })
   .catch((error) => {
     console.log('Error listing users:', error);
@@ -151,6 +176,7 @@ router.get('/manage-user', async (req, res) => {
   });
 
 });
+
 
 /******************** */
 /*      Single user   */

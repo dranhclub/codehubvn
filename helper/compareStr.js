@@ -27,5 +27,7 @@ function normalize(str) {
 }
 
 exports.compare = function (strA, strB) {
-    return normalize(strA) === normalize(strB);
+  return normalize(strA) === normalize(strB);
 }
+
+exports.normalize = normalize;
