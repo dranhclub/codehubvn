@@ -29,7 +29,6 @@ router.post('/login', (req, res, next) => {
   const remember = req.body.remember;
   
   const expiresIn = 60 * 60 * 24 * 5 * 1000;
-
   admin
     .auth()
     .createSessionCookie(idToken, {expiresIn})
@@ -121,7 +120,7 @@ router.get('/myaccount', async function (req, res, next) {
 
     const questionMetadataRef = db.collection("metadata").doc("questions");
     const questionMetadata = (await questionMetadataRef.get()).data();
-
+    console.log("questionMetadata=", questionMetadata);
     res.render('account/myaccount', { title: 'Thông tin tài khoản', user: req.user, questionMetadata });
   } else {
     res.redirect('/login');
@@ -225,6 +224,12 @@ router.get('/play/:level/:id', async (req, res) => {
   const questionMeta = questionsMetaDoc.data();
   const questionOrder = questionMeta.questionOrder[level];
   const numQuestion = questionOrder.length;
+
+  // If not have any question
+  if (numQuestion == 0) {
+    res.send("Hiện tại không có câu hỏi");
+    return;
+  }
 
   // Id must < numQuestion
   if (id >= numQuestion) {

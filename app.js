@@ -3,32 +3,9 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var admin = require('firebase-admin');
 var csrf = require('csurf');
-var firebase = require("firebase/app");
-require("firebase/analytics");
-require("firebase/auth");
-require("firebase/firestore");
-
-var firebaseConfig = {
-  apiKey: "AIzaSyCDfxUnzndLfCGAZfSfBQ4kFGYxetEsz2c",
-  authDomain: "codehubvn.firebaseapp.com",
-  projectId: "codehubvn",
-  storageBucket: "codehubvn.appspot.com",
-  messagingSenderId: "383165045388",
-  appId: "1:383165045388:web:9cb01c6c15830a5402f9a9",
-  measurementId: "G-JMWQXQ0LNB"
-};
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-
-
-var serviceAccount = require("./codehubvn-firebase-adminsdk-gy7iq-c6cb57b8a7.json");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-
+require('./config/fb.config');
+var admin = require('firebase-admin');
 
 const csrfMiddleware = csrf({ cookie: true });
 
@@ -61,11 +38,10 @@ app.all("*", async (req, res, next) => {
     const sessionCookie = req.cookies.session || "";
     try {
       let decodedIdToken = await admin.auth().verifySessionCookie(sessionCookie, true);
-      req.user = await (await admin.auth().getUser(decodedIdToken.uid));
-  
+      req.user =  await admin.auth().getUser(decodedIdToken.uid);
+      
     } catch(error) {
-      // console.log(error);
-      // req.user = null
+      console.log(error);
     }
   }
 
