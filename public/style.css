@@ -27,7 +27,7 @@
   bottom: 0;
   right: 0;
   z-index: -1;
-  opacity: 0.15;
+  opacity: 0.35;
   background-attachment: fixed;
   background-image: url('/images/background.jpg');
   background-position: center;
@@ -100,11 +100,11 @@ footer{
 
 
 
-.fantasy-btn{
+/* .fantasy-btn{
   display: inline-block;
   width: 150px;
   height: 44px;
-  color: #eee;
+  color: white;
   text-decoration: none;
   text-align: center;
   vertical-align: middle;
@@ -116,11 +116,29 @@ footer{
 }
 
 .fantasy-btn:hover{
-  color:white;
+  color: white;
   background: url('/images/buttonStock2.png') no-repeat;
   background-position: center center; 
   background-size: 100% 100%;
+} */
+
+.fantasy-btn{
+  display: inline-block;
+  width: 150px;
+  height: 44px;
+  color: black;
+  background-color: #dbc603;
+  border-radius: 10px;
+  line-height: 44px;
+  text-decoration: none;
 }
+
+.fantasy-btn:hover{
+  color:black;
+  background-color: #e7d106;
+}
+
+
 
 h1 {
   text-shadow: 1.5px 1.5px 5px rgba(128, 112, 67, 0.7);

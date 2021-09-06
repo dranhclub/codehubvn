@@ -120,7 +120,6 @@ router.get('/myaccount', async function (req, res, next) {
 
     const questionMetadataRef = db.collection("metadata").doc("questions");
     const questionMetadata = (await questionMetadataRef.get()).data();
-    console.log("questionMetadata=", questionMetadata);
     res.render('account/myaccount', { title: 'Thông tin tài khoản', user: req.user, questionMetadata });
   } else {
     res.redirect('/login');
