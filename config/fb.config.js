@@ -9,6 +9,9 @@ admin.initializeApp({
 
 async function initDatabase() {
   const db = admin.firestore();
+  // if (location.hostname === "localhost") {
+  //   db.useEmulator("localhost", 8080);
+  // }
   
   var ref = db.collection("metadata").doc("users");
   var snapshot = await ref.get();

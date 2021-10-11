@@ -5,6 +5,7 @@ var admin = require('firebase-admin');
 const { user } = require('../config/auth.config');
 const { route } = require('./route');
 const { normalize } = require('../helper/compareStr');
+const { auth } = require('firebase-admin');
 const db = admin.firestore();
 
 
@@ -132,7 +133,7 @@ router.get('/manage-user', async (req, res) => {
     });
     if (listUsersResult.pageToken) {
       // List next batch of users.
-      console.log("next page token:", listUsersResult.pageToken)
+      // console.log("next page token:", listUsersResult.pageToken)
       // listAllUsers(listUsersResult.pageToken);
     }
     return users
@@ -140,7 +141,9 @@ router.get('/manage-user', async (req, res) => {
   .then(async (users) => {
     for (let i = 0; i < users.length; i++) {
       let userInfo = await db.collection("users").doc(users[i].email).get();
-      users[i].id = userInfo.data().id;
+      if (userInfo.exists) {
+        users[i].id = userInfo.data().id;
+      }
     }
 
     if (req.query.id) {

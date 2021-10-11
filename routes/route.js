@@ -48,6 +48,45 @@ router.post('/login', (req, res, next) => {
     );
 });
 
+router.post('/init-user', (req, res) => {
+  const user = req.body.user;
+  var metaRef = db.collection("metadata").doc("users");
+      metaRef.get().then(doc => {
+        const lastId = doc.data().lastId;
+        const newId = lastId + 1;
+        metaRef.set({lastId: newId});
+
+        var userRef = db.collection("users").doc(user.email);
+        userRef.set({
+          id: newId,
+          name: user.displayName,
+          current: {
+            normal: 0,
+            hard: 0
+          },
+          answer: {
+            normal: [],
+            hard: []
+          },
+          paid: {
+            normal: false,
+            hard: false
+          }
+        }).then(() => {
+          console.log("Init user ", newId)
+          res.send({
+            code: "OK",
+            message: "Init user successfully"
+          });
+        }).catch(error => {
+          res.send({
+            code: "ERROR",
+            message: error
+          })
+        });
+      });
+});
+
 router.get('/register', (req, res) => {
   res.render('account/register', {
     title: "Tạo tài khoản"

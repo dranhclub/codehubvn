@@ -2,19 +2,22 @@
 <html lang="en">
 
     <%- include('../part/head') %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&family=Roboto:wght@700&display=swap" rel="stylesheet">
 
     <style>
 
         .banner-img{
-            width: 95%;
-            height: 95%;
-            transition: all 0.2s cubic-bezier(0.075, 0.82, 0.165, 1);
+            width: 80%;
+            height: 80%;
+            transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
             border-radius: 5px;
             box-shadow: 0px 0px 3px black;
         }
         
         .banner-img:hover{
-            width: 100%;
+            width: 95%;
             cursor: pointer;
             box-shadow: 0px 0px 5px black;
         }
@@ -27,10 +30,19 @@
 
         .banner-text{
             position: absolute;
-            top: 30%;
+            top: 26%;
+            left: 20%;
             color: white;
             font-size: 120px;
+            font-family: 'Roboto', sans-serif;
+            text-shadow: #000 1px 1px 5px;
         }
+
+        .banner-text div{
+            font-family: 'Roboto', sans-serif;
+            text-shadow: #000 1px 1px 5px;
+        }
+
     </style>
 
     <body>
@@ -41,16 +53,21 @@
                 <div class="banner-wrapper" onclick="window.location='/chooselevel'">
                     <img src="/images/code-games.jpg" alt="code-games" class="banner-img" height="400px">
                     <div class="banner-text">
-                        TRÒ CHƠI
+                        Code game
                     </div>
                 </div>
 
-                <p></p>
+                <p class="mt-5"></p>
 
                 <div class="banner-wrapper" onclick="window.location='/recruiment'">
                     <img src="/images/recruitment.jpg" alt="recruiment" class="banner-img">
                     <div class="banner-text">
-                        TUYỂN DỤNG
+                        <div style="font-size: 70px; ">
+                            Codehub Việt Nam
+                        </div>
+                        <div style="font-size: 30px; ">
+                            tuyển dụng nhà sáng tạo nội dung
+                        </div>
                     </div>
                 </div>
                 

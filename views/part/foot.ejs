@@ -14,9 +14,6 @@
         <a href="https://www.youtube.com/channel/UCjv_8uKSE18rUJO1zykLQxA" class="a-social">
           <img src="/images/youtube.svg" alt="youtube" width="40px" height="40px">
         </a>
-        <a href="" class="a-social">
-          <img src="/images/zalo.png" alt="zalo" width="40px" height="40px" style="border-radius: 50%;">
-        </a>
       </div>
     </div>
     <div class="row">
@@ -99,29 +96,45 @@ crossorigin="anonymous"></script>
 
 <script>
     async function initUser(user) {
-      var metaRef = db.collection("metadata").doc("users");
-      metaRef.get().then(doc => {
-        const lastId = doc.data().lastId;
-        const newId = lastId + 1;
-        metaRef.set({lastId: newId});
+      fetch('/init-user', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              "CSRF-Token": Cookies.get("XSRF-TOKEN")
+            },
+            body: JSON.stringify({user})
+          }).then(resp => resp.json())
+          .then(data => {
+            if (data.code == "OK") {
+              console.log("Init user ", newId)
+            } else {
+              console.log("Error:", data);
+            }
+          });
 
-        var userRef = db.collection("users").doc(user.email);
-        userRef.set({
-          id: newId,
-          name: user.displayName,
-          current: {
-            normal: 0,
-            hard: 0
-          },
-          answer: {
-            normal: [],
-            hard: []
-          },
-          paid: {
-            normal: false,
-            hard: false
-          }
-        }).then(() => console.log("Init user ", newId));
-      });
+      // var metaRef = db.collection("metadata").doc("users");
+      // metaRef.get().then(doc => {
+      //   const lastId = doc.data().lastId;
+      //   const newId = lastId + 1;
+      //   metaRef.set({lastId: newId});
+
+      //   var userRef = db.collection("users").doc(user.email);
+      //   userRef.set({
+      //     id: newId,
+      //     name: user.displayName,
+      //     current: {
+      //       normal: 0,
+      //       hard: 0
+      //     },
+      //     answer: {
+      //       normal: [],
+      //       hard: []
+      //     },
+      //     paid: {
+      //       normal: false,
+      //       hard: false
+      //     }
+      //   }).then(() => console.log("Init user ", newId));
+      // });
     }
 </script>

@@ -98,44 +98,21 @@ footer{
   background-color: rgba(128, 112, 67, 0.7);
 }
 
-
-
-/* .fantasy-btn{
-  display: inline-block;
-  width: 150px;
-  height: 44px;
-  color: white;
-  text-decoration: none;
-  text-align: center;
-  vertical-align: middle;
-  line-height: 44px;
-  background: url('/images/buttonStock1.png') no-repeat;
-  background-position: center center; 
-  background-size: 100% 100%;
-  border: none;
-}
-
-.fantasy-btn:hover{
-  color: white;
-  background: url('/images/buttonStock2.png') no-repeat;
-  background-position: center center; 
-  background-size: 100% 100%;
-} */
-
 .fantasy-btn{
   display: inline-block;
-  width: 150px;
-  height: 44px;
-  color: black;
-  background-color: #dbc603;
+  width: 120px;
+  height: 40px;
+  color: white;
+  background-color: rgba(128, 112, 67, 0.7);
   border-radius: 10px;
-  line-height: 44px;
+  line-height: 40px;
   text-decoration: none;
+  text-align: center;
 }
 
 .fantasy-btn:hover{
-  color:black;
-  background-color: #e7d106;
+  color:white;
+  background-color: rgba(129, 126, 115, 0.7);
 }
 
 
